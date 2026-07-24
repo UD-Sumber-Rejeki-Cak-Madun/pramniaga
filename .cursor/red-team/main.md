@@ -2,6 +2,7 @@
 
 Performs adversarial review of auth, permissions, sensitive data, APIs, uploads, and untrusted input.
 
+- Follow `.cursor/CODE_STANDARDS.md`, `.cursor/FILE_STRUCTURE.md`, and `.cursor/rules/*` before editing.
 - Trace actor → input → authorization → data access → side effect → audit.
 - Focus on plausible abuse, not generic code-quality notes.
 - Flag missing server-side enforcement for client-controlled actions.

@@ -1,7 +1,20 @@
+/**
+ * Purpose: Session bootstrap, CSRF, and credential login against Frappe.
+ * Exports: fetchSession, loginWithCredentials, logoutSession, resetPassword, signUp, getGoogleLoginUrl, remember-email helpers
+ * Contents: CSRF cookie/bootstrap, stock /api/method/login, session payload fetch
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import type { SessionData } from './types'
 import { applySessionBoot } from './utils'
 import { API } from './api'
 
+/**
+ * siteHeaders - Build Accept / site / CSRF headers for API fetches.
+ *
+ * @returns HeadersInit for fetch calls.
+ */
 function siteHeaders(): HeadersInit {
 	const headers: Record<string, string> = {
 		Accept: 'application/json',
@@ -14,6 +27,12 @@ function siteHeaders(): HeadersInit {
 	return headers
 }
 
+/**
+ * parseMessage - Parse Frappe JSON response and throw on error payloads.
+ *
+ * @param response - Fetch Response.
+ * @returns Unwrapped `message` value.
+ */
 async function parseMessage<T>(response: Response): Promise<T> {
 	const data = await response.json()
 	if (!response.ok) {
@@ -35,7 +54,11 @@ async function parseMessage<T>(response: Response): Promise<T> {
 	return data.message as T
 }
 
-/** GET is CSRF-safe — use this to bootstrap csrf_token before any POST. */
+/**
+ * fetchSession - GET session payload and apply CSRF boot (CSRF-safe).
+ *
+ * @returns SessionData for the current user (or guest).
+ */
 export async function fetchSession(): Promise<SessionData> {
 	const response = await fetch(`/api/method/${API.auth.session}`, {
 		method: 'GET',
@@ -48,8 +71,11 @@ export async function fetchSession(): Promise<SessionData> {
 }
 
 /**
- * Login via stock Frappe /api/method/login (same as Desk), then load our session payload.
- * Ensures CSRF is present first (critical for yarn/Vite where index.html has no Jinja token).
+ * loginWithCredentials - Login via stock Frappe /api/method/login, then load session.
+ *
+ * @param usr - Username or email.
+ * @param pwd - Password.
+ * @returns SessionData after successful login.
  */
 export async function loginWithCredentials(usr: string, pwd: string): Promise<SessionData> {
 	if (!window.csrf_token) {
@@ -69,6 +95,11 @@ export async function loginWithCredentials(usr: string, pwd: string): Promise<Se
 	return fetchSession()
 }
 
+/**
+ * logoutSession - POST logout and clear local CSRF.
+ *
+ * @returns void
+ */
 export async function logoutSession(): Promise<void> {
 	if (!window.csrf_token) {
 		await fetchSession()
@@ -85,12 +116,24 @@ export async function logoutSession(): Promise<void> {
 	window.csrf_token = ''
 }
 
+/**
+ * ensureCsrf - Ensure window.csrf_token exists before POST.
+ *
+ * @returns void
+ */
 async function ensureCsrf() {
 	if (!window.csrf_token) {
 		await fetchSession()
 	}
 }
 
+/**
+ * postMethod - POST a Frappe method with JSON body after ensuring CSRF.
+ *
+ * @param method - Dotted method path.
+ * @param body - JSON body params.
+ * @returns Unwrapped message payload.
+ */
 async function postMethod<T>(method: string, body: Record<string, unknown>): Promise<T> {
 	await ensureCsrf()
 	const response = await fetch(`/api/method/${method}`, {
@@ -105,11 +148,25 @@ async function postMethod<T>(method: string, body: Record<string, unknown>): Pro
 	return parseMessage<T>(response)
 }
 
+/**
+ * resetPassword - Request a password reset email for a user.
+ *
+ * @param user - Email or username.
+ * @returns User-facing confirmation string.
+ */
 export async function resetPassword(user: string): Promise<string> {
 	await postMethod(API.auth.resetPassword, { user })
 	return 'If this email is registered with us, we have sent password reset instructions to it. Please check your inbox.'
 }
 
+/**
+ * signUp - Create a user via Frappe sign_up.
+ *
+ * @param email - New user email.
+ * @param fullName - Full name.
+ * @param redirectTo - Post-signup redirect path.
+ * @returns Status code and message from Frappe.
+ */
 export async function signUp(
 	email: string,
 	fullName: string,
@@ -132,6 +189,12 @@ export async function signUp(
 	return { status: 0, message: 'Unable to create account. Please try again.' }
 }
 
+/**
+ * getGoogleLoginUrl - Fetch Google OAuth authorize URL when configured.
+ *
+ * @param redirectTo - Post-login redirect path.
+ * @returns Authorize URL or null.
+ */
 export async function getGoogleLoginUrl(redirectTo = '/frontend'): Promise<string | null> {
 	await ensureCsrf()
 	const response = await fetch(
@@ -147,6 +210,11 @@ export async function getGoogleLoginUrl(redirectTo = '/frontend'): Promise<strin
 
 export const REMEMBER_EMAIL_KEY = 'pramniaga.login.remember'
 
+/**
+ * loadRememberedEmail - Read remembered login email from localStorage.
+ *
+ * @returns Stored email or empty string.
+ */
 export function loadRememberedEmail(): string {
 	try {
 		return localStorage.getItem(REMEMBER_EMAIL_KEY) || ''
@@ -155,6 +223,12 @@ export function loadRememberedEmail(): string {
 	}
 }
 
+/**
+ * saveRememberedEmail - Persist or clear remembered login email.
+ *
+ * @param email - Email to store, or null to clear.
+ * @returns void
+ */
 export function saveRememberedEmail(email: string | null) {
 	try {
 		if (email) localStorage.setItem(REMEMBER_EMAIL_KEY, email)

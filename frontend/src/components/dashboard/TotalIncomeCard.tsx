@@ -1,3 +1,9 @@
+/**
+ * Purpose: Dashboard card — MTD income and MoM change.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { TrendingUp } from 'lucide-react'
 import { Badge, Card } from '@/components/ui'
 
@@ -13,6 +19,16 @@ function formatMoney(value: number, currency?: string | null) {
 	}
 }
 
+/**
+ * TotalIncomeCard - Dashboard card for MTD income and MoM change.
+ *
+ * @param props.mtdTotal - Month-to-date net total.
+ * @param props.momPercent - Month-over-month percent change (nullable).
+ * @param props.currency - Currency code for formatting.
+ * @param props.loading - Show placeholder while loading.
+ * @param props.canRead - Whether Sales Invoice is readable.
+ * @returns Card element.
+ */
 export function TotalIncomeCard({
 	mtdTotal,
 	momPercent,

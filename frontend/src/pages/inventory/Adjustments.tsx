@@ -1,3 +1,9 @@
+/**
+ * Purpose: Stock Reconciliation list page.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
@@ -13,6 +19,11 @@ interface AdjustmentSummary {
 	docstatus: number
 }
 
+/**
+ * AdjustmentsPage - Stock Reconciliation list page.
+ *
+ * @returns Page or card element.
+ */
 export default function AdjustmentsPage() {
 	const { session } = useAuth()
 	const navigate = useNavigate()

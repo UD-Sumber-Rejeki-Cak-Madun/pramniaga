@@ -1,3 +1,9 @@
+/**
+ * Purpose: Product (Item) list page.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
@@ -5,6 +11,11 @@ import type { Item } from '@/lib/types'
 import { Badge, Button, DataTable, EmptyState, ErrorBanner, LoadingState, PageHeader } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
+/**
+ * ProductsPage - Product (Item) list page.
+ *
+ * @returns Page or card element.
+ */
 export default function ProductsPage() {
 	const { session } = useAuth()
 	const navigate = useNavigate()

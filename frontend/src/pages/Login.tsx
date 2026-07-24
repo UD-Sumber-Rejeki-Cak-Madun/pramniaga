@@ -1,3 +1,9 @@
+/**
+ * Purpose: Login route — brand stage + auth forms layout.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -38,6 +44,11 @@ function usePrefersReducedMotion() {
 	return reduce
 }
 
+/**
+ * LoginPage - Login route layout with brand stage and auth forms.
+ *
+ * @returns Page or card element.
+ */
 export default function LoginPage() {
 	const { session, login, error } = useAuth()
 	const isDesktop = useIsDesktop()

@@ -1,5 +1,28 @@
+"""
+Purpose: Dashboard aggregations for home cards (revenue, activity, events).
+Exports: revenue_summary, daily_activities, upcoming_events.
+Contents:
+  - Helpers: company resolve, permission, month keys, MTD net
+  - revenue_summary: 9-month Sales Invoice series + MoM
+  - daily_activities: merged recent SI / PE / Stock Entry rows
+  - upcoming_events: calendar events for current user
+Non-goals: Inventory CRUD (api.inventory.*).
+Last updated: 2026-07-24
+Author: Pramniaga
+"""
+
 import frappe
-from frappe.utils import add_days, add_months, cint, flt, get_first_day, get_last_day, getdate, now_datetime, today
+from frappe.utils import (
+	add_days,
+	add_months,
+	cint,
+	flt,
+	get_first_day,
+	get_last_day,
+	getdate,
+	now_datetime,
+	today,
+)
 
 from pramniaga.api.common import get_default_company, require_login
 
@@ -27,7 +50,16 @@ def _month_label(key: str) -> str:
 
 @frappe.whitelist()
 def revenue_summary(company: str | None = None):
-	"""Monthly Sales Invoice totals and MTD income for the dashboard."""
+	"""
+	revenue_summary - Monthly Sales Invoice totals and MTD income for the dashboard.
+
+	Args:
+		company: Optional company; defaults via get_default_company.
+
+	Returns:
+			Dict with currency, months[{key,label,income,returns,net}], mtd_total,
+			prior_mtd_total, mom_percent, can_read. Empty-safe when SI unreadable.
+	"""
 	require_login()
 	company = _resolve_company(company)
 
@@ -114,6 +146,7 @@ def _is_return(value) -> bool:
 
 
 def _mtd_net(company: str, month_key: str, through_day: int) -> float:
+	"""Net Sales Invoice total from month start through through_day (inclusive)."""
 	month_start = getdate(f"{month_key}-01")
 	last_day = get_last_day(month_start)
 	end = getdate(f"{month_key}-{min(through_day, last_day.day):02d}")
@@ -140,7 +173,16 @@ def _mtd_net(company: str, month_key: str, through_day: int) -> float:
 
 @frappe.whitelist()
 def daily_activities(company: str | None = None, limit: int = 15):
-	"""Recent readable documents for the activity timeline."""
+	"""
+	daily_activities - Recent readable documents for the activity timeline.
+
+	Args:
+		company: Optional company filter.
+		limit: Max items after merge/sort (1-50).
+
+	Returns:
+			Dict with company and items[{id, doctype, name, title, time, tone, status}].
+	"""
 	require_login()
 	company = _resolve_company(company)
 	limit = max(1, min(cint(limit), 50))
@@ -221,7 +263,15 @@ def daily_activities(company: str | None = None, limit: int = 15):
 
 @frappe.whitelist()
 def upcoming_events(days: int = 14):
-	"""Upcoming calendar events for the current user."""
+	"""
+	upcoming_events - Upcoming calendar events for the current user.
+
+	Args:
+		days: Lookahead window (1-60).
+
+	Returns:
+			Dict with can_read and items[{name, subject, starts_on, ends_on, all_day, color, description}].
+	"""
 	require_login()
 	days = max(1, min(cint(days), 60))
 

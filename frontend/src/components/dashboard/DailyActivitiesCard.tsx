@@ -1,3 +1,9 @@
+/**
+ * Purpose: Dashboard card — recent activity timeline.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import type { ActivityItem } from '@/lib/types'
 import { Card, EmptyState, LoadingState } from '@/components/ui'
 import { cn } from '@/lib/utils'
@@ -23,6 +29,12 @@ function formatTime(value: string) {
 	}
 }
 
+/**
+ * DailyActivitiesCard - Dashboard card for recent activity timeline.
+ *
+ * @param props - Activity feed items plus loading/empty flags.
+ * @returns Card element.
+ */
 export function DailyActivitiesCard({
 	items,
 	loading,

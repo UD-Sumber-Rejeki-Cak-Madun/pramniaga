@@ -1,3 +1,9 @@
+/**
+ * Purpose: Inventory overview — draft counts and quick links.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -15,6 +21,11 @@ const cards = [
 	{ key: 'warehouses', title: 'Warehouses', href: '/inventory/warehouses', color: 'bg-slate-700' },
 ] as const
 
+/**
+ * InventoryOverview - Inventory overview with draft counts and quick links.
+ *
+ * @returns Page or card element.
+ */
 export default function InventoryOverview() {
 	const { session } = useAuth()
 	const [counts, setCounts] = useState<OverviewCounts | null>(null)

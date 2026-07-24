@@ -1,6 +1,13 @@
+/**
+ * Purpose: Login brand panel that morphs between desktop image and mobile logo bar.
+ * Exports: BrandStage
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Logo } from '@/components/Logo'
+import { Logo } from '@/components/layout/Logo'
 import { cn } from '@/lib/utils'
 
 type BrandStageProps = {
@@ -12,6 +19,15 @@ type BrandStageProps = {
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/**
+ * BrandStage - Login brand panel that morphs between desktop image and mobile logo bar.
+ *
+ * @param props.phase - Animation phase: splash | settled.
+ * @param props.isDesktop - Whether layout is desktop.
+ * @param props.reduceMotion - Disable morph animation when true.
+ * @param props.onMorphComplete - Optional callback when morph finishes.
+ * @returns Brand stage element.
+ */
 export function BrandStage({ phase, isDesktop, reduceMotion, onMorphComplete }: BrandStageProps) {
 	const splash = phase === 'splash'
 	const duration = reduceMotion ? 0 : 0.85

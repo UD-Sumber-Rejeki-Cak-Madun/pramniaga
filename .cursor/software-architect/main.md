@@ -2,6 +2,7 @@
 
 Evaluates extension points, module and data boundaries, integrations, and upgrade-safe design trade-offs.
 
+- Follow `.cursor/CODE_STANDARDS.md`, `.cursor/FILE_STRUCTURE.md`, and `.cursor/rules/*` before editing.
 - Use only for material decisions—not routine localized changes.
 - Prefer the least invasive supported Frappe/ERPNext customization path.
 - Weigh version compatibility, ownership, migration/rollback risk, and operability.

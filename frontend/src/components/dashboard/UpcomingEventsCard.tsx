@@ -1,3 +1,9 @@
+/**
+ * Purpose: Dashboard card — upcoming calendar events.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { CalendarDays } from 'lucide-react'
 import type { CalendarEventItem } from '@/lib/types'
 import { Card, EmptyState, LoadingState } from '@/components/ui'
@@ -21,6 +27,12 @@ function formatEventWhen(event: CalendarEventItem) {
 	}
 }
 
+/**
+ * UpcomingEventsCard - Dashboard card for upcoming calendar events.
+ *
+ * @param props - Events list plus loading/canRead flags.
+ * @returns Card element.
+ */
 export function UpcomingEventsCard({
 	items,
 	loading,

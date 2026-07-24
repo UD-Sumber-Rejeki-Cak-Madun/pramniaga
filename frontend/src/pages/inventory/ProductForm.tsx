@@ -1,3 +1,9 @@
+/**
+ * Purpose: Create/edit Item form.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
@@ -5,6 +11,11 @@ import type { Item } from '@/lib/types'
 import { Button, ErrorBanner, Input, LoadingState, PageHeader, Select, Textarea } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
+/**
+ * ProductFormPage - Create/edit Item form page.
+ *
+ * @returns Page or card element.
+ */
 export default function ProductFormPage() {
 	const { id } = useParams()
 	const isNew = !id || id === 'new'

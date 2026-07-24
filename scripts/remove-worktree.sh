@@ -8,13 +8,20 @@
 #   scripts/remove-worktree.sh <name> --force   # git worktree remove --force
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=worktree-common.sh
+source "$SCRIPT_DIR/worktree-common.sh"
+
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 NAME="${1:?usage: remove-worktree.sh <name> [--force]}"
 FORCE="${2:-}"
 
-APPS_DIR="$(cd "$ROOT/.." && pwd)"
-BENCH_ROOT="$(cd "$APPS_DIR/.." && pwd)"
+BENCH_ROOT="$(find_bench_root "$ROOT")" || {
+	echo "error: could not locate frappe-bench from $ROOT" >&2
+	exit 1
+}
 DEV_ROOT="$(cd "$BENCH_ROOT/.." && pwd)"
+APPS_DIR="$BENCH_ROOT/apps"
 WORKTREES_DIR="${PRAMNIAGA_WORKTREES_DIR:-$DEV_ROOT/worktrees}"
 ACTIVE="$APPS_DIR/pramniaga"
 DEST="$WORKTREES_DIR/pramniaga--${NAME}"

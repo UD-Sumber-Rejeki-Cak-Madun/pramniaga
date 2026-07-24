@@ -4,6 +4,10 @@
 # Worktrees live OUTSIDE frappe-bench/apps (bench must see only one
 # apps/pramniaga). Runtime activation is scripts/use-worktree.sh.
 #
+# Also ensures:
+#   <development>/sites -> <development>/frappe-bench/sites
+# so tooling that resolves ../../../sites from a worktree frontend still works.
+#
 # Usage:
 #   scripts/new-worktree.sh <name> [branch]
 #
@@ -15,17 +19,24 @@
 #   <development>/worktrees/pramniaga--<name>
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=worktree-common.sh
+source "$SCRIPT_DIR/worktree-common.sh"
+
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 NAME="${1:?usage: new-worktree.sh <name> [branch]}"
 BRANCH="${2:-feature/${NAME}}"
 
-APPS_DIR="$(cd "$ROOT/.." && pwd)"
-BENCH_ROOT="$(cd "$APPS_DIR/.." && pwd)"
+BENCH_ROOT="$(find_bench_root "$ROOT")" || {
+	echo "error: could not locate frappe-bench from $ROOT" >&2
+	exit 1
+}
 DEV_ROOT="$(cd "$BENCH_ROOT/.." && pwd)"
+APPS_DIR="$BENCH_ROOT/apps"
 WORKTREES_DIR="${PRAMNIAGA_WORKTREES_DIR:-$DEV_ROOT/worktrees}"
 DEST="$WORKTREES_DIR/pramniaga--${NAME}"
 
-if [[ "$DEST" == "$ROOT" || "$DEST" == "$APPS_DIR"/* ]]; then
+if [[ "$DEST" == "$APPS_DIR"/* ]]; then
 	echo "error: refusing to create a worktree under frappe-bench/apps" >&2
 	exit 1
 fi
@@ -36,6 +47,7 @@ if [[ -e "$DEST" ]]; then
 fi
 
 mkdir -p "$WORKTREES_DIR"
+ensure_sites_symlink "$BENCH_ROOT"
 
 echo "Creating worktree"
 echo "  name:   $NAME"

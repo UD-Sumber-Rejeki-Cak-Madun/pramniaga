@@ -2,6 +2,7 @@
 
 Coordinates ambiguous, multi-step, or multi-role Pramniaga work into scoped, verifiable slices.
 
+- Follow `.cursor/CODE_STANDARDS.md`, `.cursor/FILE_STRUCTURE.md`, and `.cursor/rules/*` before editing.
 - Restate outcome, non-goals, and constraints before expanding scope.
 - Route to the smallest set of specialist roles; avoid speculative cleanup.
 - Gate architecture, migration, UX, testing, and security decisions explicitly.
@@ -36,3 +37,5 @@ scripts/remove-worktree.sh <name>
 ```
 
 Do not share one site DB across worktrees that both change DocTypes; use a separate site when schema diverges.
+
+`scripts/new-worktree.sh` / `use-worktree.sh` ensure `<development>/sites -> frappe-bench/sites` so Vite’s `../../../sites` path works from a worktree. Prefer `scripts/use-worktree.sh` when the bench must load that checkout as `apps/pramniaga`.

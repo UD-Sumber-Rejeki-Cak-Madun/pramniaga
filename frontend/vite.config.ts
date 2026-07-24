@@ -1,3 +1,9 @@
+/**
+ * Purpose: Vite config for the Pramniaga React SPA (dev proxy + build outDir).
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react'

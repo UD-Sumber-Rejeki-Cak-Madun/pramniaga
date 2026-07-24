@@ -1,3 +1,9 @@
+/**
+ * Purpose: Shared TypeScript types for session, inventory, and dashboard payloads.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 export interface Capabilities {
 	can_browse_stock: boolean
 	can_manage_items: boolean

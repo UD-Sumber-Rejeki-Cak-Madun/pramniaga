@@ -1,3 +1,9 @@
+/**
+ * Purpose: Parameterized Stock Entry list (receipts/deliveries/transfers).
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
@@ -35,6 +41,12 @@ const config: Record<
 	},
 }
 
+/**
+ * MovesListPage - Parameterized Stock Entry list (receipts/deliveries/transfers).
+ *
+ * @param props.kind - Move kind: receipt | delivery | transfer.
+ * @returns Page element.
+ */
 export default function MovesListPage({ kind }: { kind: MoveKind }) {
 	const cfg = config[kind]
 	const navigate = useNavigate()

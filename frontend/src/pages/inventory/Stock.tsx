@@ -1,3 +1,9 @@
+/**
+ * Purpose: Stock on-hand (Bin) browse page.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { API, useApiCall } from '@/lib/api'
 import type { BinRow } from '@/lib/types'
@@ -5,6 +11,11 @@ import { DataTable, EmptyState, ErrorBanner, LoadingState, PageHeader } from '@/
 import { formatQty } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 
+/**
+ * StockPage - Stock on-hand (Bin) browse page.
+ *
+ * @returns Page or card element.
+ */
 export default function StockPage() {
 	const { session } = useAuth()
 	const [rows, setRows] = useState<BinRow[]>([])

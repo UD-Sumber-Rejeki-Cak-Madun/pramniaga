@@ -1,3 +1,9 @@
+/**
+ * Purpose: Dashboard card — multi-month revenue bar chart.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import {
 	Bar,
 	BarChart,
@@ -17,6 +23,12 @@ function formatCompact(value: number) {
 	return value.toFixed(0)
 }
 
+/**
+ * RevenueForecastCard - Dashboard card for multi-month revenue chart.
+ *
+ * @param props - Revenue summary fields used by the chart (months, loading, canRead, currency).
+ * @returns Card element.
+ */
 export function RevenueForecastCard({
 	months,
 	loading,

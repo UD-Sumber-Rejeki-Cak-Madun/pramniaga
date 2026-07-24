@@ -1,9 +1,20 @@
+/**
+ * Purpose: Warehouse list and create form.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { API, useApiCall } from '@/lib/api'
 import type { Warehouse } from '@/lib/types'
 import { Button, DataTable, EmptyState, ErrorBanner, Input, LoadingState, PageHeader } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
+/**
+ * WarehousesPage - Warehouse list and create page.
+ *
+ * @returns Page or card element.
+ */
 export default function WarehousesPage() {
 	const { session } = useAuth()
 	const [rows, setRows] = useState<Warehouse[]>([])

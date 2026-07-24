@@ -1,3 +1,9 @@
+/**
+ * Purpose: Home dashboard page composing revenue/activity/events cards.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { Users } from 'lucide-react'
 import { API, useApiCall } from '@/lib/api'
@@ -9,6 +15,11 @@ import { UpcomingEventsCard } from '@/components/dashboard/UpcomingEventsCard'
 import { Card, ErrorBanner, PageHeader } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
+/**
+ * HomeDashboard - Home dashboard composing revenue, activity, and events cards.
+ *
+ * @returns Page or card element.
+ */
 export default function HomeDashboard() {
 	const { session } = useAuth()
 	const company = session?.default_company || undefined

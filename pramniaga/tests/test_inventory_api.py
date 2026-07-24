@@ -1,3 +1,9 @@
+"""
+Purpose: Integration tests for auth, apps catalog, and inventory API facades.
+Last updated: 2026-07-24
+Author: Pramniaga
+"""
+
 import frappe
 from frappe.tests import IntegrationTestCase
 

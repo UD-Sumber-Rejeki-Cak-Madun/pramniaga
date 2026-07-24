@@ -1,3 +1,9 @@
+/**
+ * Purpose: Login, signup, and forgot-password forms.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { ErrorBanner } from '@/components/ui'
@@ -16,6 +22,12 @@ type LoginFormProps = {
 	onForgot: () => void
 }
 
+/**
+ * LoginFormView - Email/password login form with remember-me.
+ *
+ * @param props - Login form controlled fields and handlers.
+ * @returns Login form element.
+ */
 export function LoginFormView({
 	usr,
 	pwd,
@@ -115,6 +127,12 @@ type ForgotFormProps = {
 	onBack: () => void
 }
 
+/**
+ * ForgotFormView - Password reset request form.
+ *
+ * @param props - Forgot-password controlled fields and handlers.
+ * @returns Forgot-password form element.
+ */
 export function ForgotFormView({
 	email,
 	loading,

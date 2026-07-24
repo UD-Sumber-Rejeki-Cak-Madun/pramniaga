@@ -1,3 +1,10 @@
+/**
+ * Purpose: Auth context — session state, login/logout for the SPA.
+ * Exports: AuthProvider, useAuth
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { SessionData } from '@/lib/types'
 import { getInitialSession } from '@/lib/utils'
@@ -14,6 +21,12 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+/**
+ * AuthProvider - Provides session state and auth actions to the SPA tree.
+ *
+ * @param props.children - React children wrapped by the provider.
+ * @returns Auth context provider element.
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const initial = getInitialSession()
 	const [session, setSession] = useState<SessionData | null>(initial)
@@ -71,6 +84,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+/**
+ * useAuth - Read auth context (session, login, logout, refresh).
+ *
+ * @returns Auth context value.
+ * @throws Error if used outside AuthProvider.
+ */
 export function useAuth() {
 	const ctx = useContext(AuthContext)
 	if (!ctx) throw new Error('useAuth must be used within AuthProvider')

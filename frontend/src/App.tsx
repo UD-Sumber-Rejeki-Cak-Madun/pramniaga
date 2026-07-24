@@ -1,8 +1,15 @@
+/**
+ * Purpose: Router, FrappeProvider, auth gate, and inventory/dashboard routes.
+ * Exports: default App
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { FrappeProvider } from 'frappe-react-sdk'
 import { getRouterBasename } from '@/lib/utils'
 import { AuthProvider, useAuth } from '@/lib/auth'
-import { Shell } from '@/components/Shell'
+import { Shell } from '@/components/layout/Shell'
 import { LoadingState } from '@/components/ui'
 import LoginPage from '@/pages/Login'
 import HomeDashboard from '@/pages/HomeDashboard'
@@ -16,6 +23,12 @@ import MoveFormPage from '@/pages/inventory/MoveForm'
 import AdjustmentsPage from '@/pages/inventory/Adjustments'
 import AdjustmentFormPage from '@/pages/inventory/AdjustmentForm'
 
+/**
+ * ProtectedRoute - Redirect guests to /login; show loading while session boots.
+ *
+ * @param props.children - Protected route tree.
+ * @returns Children, Navigate, or LoadingState.
+ */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	const { session, loading } = useAuth()
 	if (loading && !session) return <LoadingState label="Checking session…" />
@@ -23,6 +36,11 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	return <>{children}</>
 }
 
+/**
+ * AppRoutes - Top-level route table for login, dashboard, and inventory.
+ *
+ * @returns Routes element.
+ */
 function AppRoutes() {
 	return (
 		<Routes>
@@ -60,6 +78,11 @@ function AppRoutes() {
 	)
 }
 
+/**
+ * App - Root provider stack (Frappe, auth, router).
+ *
+ * @returns Application root element.
+ */
 export default function App() {
 	const siteName =
 		window.boot?.site_name ||

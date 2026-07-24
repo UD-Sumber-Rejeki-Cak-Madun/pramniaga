@@ -1,3 +1,13 @@
+/**
+ * Purpose: Authenticated app chrome — header, sidebar, mobile drawer, outlet.
+ * Exports: Shell
+ * Contents:
+ *  - SidebarNav (home + apps + inventory sublinks)
+ *  - Shell (session header, desktop aside, mobile menu, main outlet)
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
 	ChevronDown,
@@ -9,7 +19,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Logo } from '@/components/Logo'
+import { Logo } from '@/components/layout/Logo'
 import { Button } from '@/components/ui'
 import { API, useApiCall } from '@/lib/api'
 import type { AppTile } from '@/lib/types'
@@ -27,6 +37,15 @@ const inventoryLinks = [
 	{ to: '/inventory/warehouses', label: 'Warehouses' },
 ]
 
+/**
+ * SidebarNav - Desktop/mobile sidebar with home, apps, and inventory links.
+ *
+ * @param props.apps - App tiles from list_apps.
+ * @param props.inventoryOpen - Whether inventory sublinks are expanded.
+ * @param props.onToggleInventory - Toggle/navigate inventory section.
+ * @param props.onNavigate - Optional callback after a nav click (closes mobile menu).
+ * @returns Sidebar navigation element.
+ */
 function SidebarNav({
 	apps,
 	inventoryOpen,
@@ -154,6 +173,11 @@ function SidebarNav({
 	)
 }
 
+/**
+ * Shell - Authenticated app chrome with header, sidebar, and route outlet.
+ *
+ * @returns Layout wrapping child routes via Outlet.
+ */
 export function Shell() {
 	const { session, logout } = useAuth()
 	const navigate = useNavigate()
@@ -174,6 +198,11 @@ export function Shell() {
 		if (!inInventory) setInventoryOpen(false)
 	}, [inInventory])
 
+	/**
+	 * toggleInventory - Expand inventory nav and/or jump to overview.
+	 *
+	 * @returns void
+	 */
 	const toggleInventory = () => {
 		if (inInventory) {
 			navigate('/inventory')

@@ -1,3 +1,9 @@
+/**
+ * Purpose: Create Stock Entry form for receipt/delivery/transfer kinds.
+ *
+ * Last updated: 2026-07-24
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
@@ -40,6 +46,12 @@ const config: Record<
 	},
 }
 
+/**
+ * MoveFormPage - Create Stock Entry form for receipt/delivery/transfer.
+ *
+ * @param props.kind - Move kind: receipt | delivery | transfer.
+ * @returns Page element.
+ */
 export default function MoveFormPage({ kind }: { kind: MoveKind }) {
 	const cfg = config[kind]
 	const { id } = useParams()

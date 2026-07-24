@@ -1,0 +1,30 @@
+---
+description: Pramniaga React layout, UI barrel, and JSDoc conventions
+globs: frontend/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Pramniaga Frontend React
+
+Follow [`.cursor/CODE_STANDARDS.md`](../CODE_STANDARDS.md) and [`.cursor/FILE_STRUCTURE.md`](../FILE_STRUCTURE.md).
+
+## Placement
+
+- Primitives → `components/ui/` + barrel `index.ts` (`@/components/ui`).
+- Chrome → `components/layout/`. Domain widgets → `components/<domain>/`. Screens → `pages/<domain>/`.
+- Shared non-UI → `lib/` (`api.ts` is the JSDoc gold standard).
+
+## Docs
+
+- File header: Purpose, Exports, Last updated, Author: Pramniaga.
+- Every exported function/component/default page export:
+
+```
+Name - Description.
+
+@param ...
+@returns ...
+```
+
+- No narrating `//` that only repeats the next statement.
+- Method strings only in `lib/api.ts`. Cover loading / empty / error UI states.
