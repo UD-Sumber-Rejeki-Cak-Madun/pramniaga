@@ -8,18 +8,17 @@ app_license = "mit"
 # Apps
 # ------------------
 
-# required_apps = []
+required_apps = ["erpnext"]
 
-# Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "pramniaga",
-# 		"logo": "/assets/pramniaga/logo.png",
-# 		"title": "Pramniaga",
-# 		"route": "/pramniaga",
-# 		"has_permission": "pramniaga.api.permission.has_app_permission"
-# 	}
-# ]
+add_to_apps_screen = [
+	{
+		"name": "pramniaga",
+		"logo": "/assets/pramniaga/logo.svg",
+		"title": "Pramniaga",
+		"route": "/frontend",
+		"has_permission": "pramniaga.api.permission.has_app_permission",
+	}
+]
 
 # Includes in <head>
 # ------------------
@@ -56,8 +55,7 @@ app_license = "mit"
 # Home Pages
 # ----------
 
-# application home page (will override Website Settings)
-# home_page = "login"
+home_page = "frontend"
 
 # website user home page (by Role)
 # role_home_page = {
@@ -256,3 +254,8 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+website_route_rules = [
+	{"from_route": "/frontend/<path:app_path>", "to_route": "frontend"},
+	{"from_route": "/frontend", "to_route": "frontend"},
+]
