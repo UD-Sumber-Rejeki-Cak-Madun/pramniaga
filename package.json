@@ -1,0 +1,24 @@
+{
+  "name": "pramniaga",
+  "version": "1.0.0",
+  "description": "ERP-system specifically design for intuitive user experience",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "(cd frontend && yarn install)",
+    "build": "(cd frontend && yarn build)",
+    "dev": "(cd frontend && yarn dev)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UD-Sumber-Rejeki-Cak-Madun/pramniaga.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/UD-Sumber-Rejeki-Cak-Madun/pramniaga/issues"
+  },
+  "homepage": "https://github.com/UD-Sumber-Rejeki-Cak-Madun/pramniaga#readme"
+}

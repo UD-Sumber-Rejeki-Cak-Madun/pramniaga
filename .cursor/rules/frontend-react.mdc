@@ -1,0 +1,84 @@
+---
+description: Pramniaga React layout, UI barrel, naming, CSS, and JSDoc conventions
+globs: frontend/**/*.{ts,tsx,css}
+alwaysApply: false
+---
+
+# Pramniaga Frontend React
+
+Follow [`.cursor/CODE_STANDARDS.md`](../CODE_STANDARDS.md) and [`.cursor/FILE_STRUCTURE.md`](../FILE_STRUCTURE.md).
+
+## Placement
+
+- Primitives → `components/ui/` + barrel `index.ts` (`@/components/ui`). Until split, keep adding to `ui.tsx` only for tiny one-offs; prefer extracting when the file grows.
+- Chrome → `components/layout/`. Domain widgets → `components/<domain>/`. Screens → `pages/<domain>/`.
+- Shared non-UI → `lib/` (`api.ts` is the JSDoc gold standard).
+
+## Docs & naming
+
+- File header: Purpose, Exports, Last updated, Author: Pramniaga.
+- Every exported function/component/default page export:
+
+```
+Name - Description.
+
+@param ...
+@returns ...
+```
+
+- Variables: `camelCase`, intent-first (`overviewCounts`, `showForm`). Booleans: `is`/`has`/`can`/`show`.
+- No narrating `//` that only repeats the next statement.
+- Method strings only in `lib/api.ts`. Cover loading / empty / error UI states.
+- Auth: keep protected UI gated until session refresh completes; do not trust boot session alone.
+
+## Colors (design tokens)
+
+Tokens live in `frontend/src/index.css` (`:root` RGB channels) and are wired in `tailwind.config.js`. Prefer token utilities over raw hex.
+
+| Token | Use for |
+| --- | --- |
+| `brand` / `brand-dark` | Primary actions, active nav, brand accents |
+| `canvas` | Page / shell background (frosted chrome uses `rgb(var(--canvas) / α)`) |
+| `surface-2` | Subtle fills (inputs, idle hovers that are not semantic) |
+| `ink` / `ink-muted` | Body text / secondary text |
+| `line` | Borders, hairlines |
+| `danger` | Destructive actions (logout, delete) |
+| `accent` | Occasional highlight only — not a second brand |
+
+```tsx
+// ❌ BAD — one-off hex / gray stacks
+className="bg-[#F3F3F3] text-gray-500 hover:bg-gray-100"
+
+// ✅ GOOD — tokens + alpha when needed
+className="bg-canvas text-ink-muted hover:bg-brand/10 hover:text-brand"
+className="hover:bg-danger/10 hover:text-danger" // logout / destructive
+```
+
+- Soft hovers: tint with `/10` (or similar), do not slam full `bg-surface-2` on destructive/logout.
+- Frosted chrome (e.g. topbar): base = canvas + alpha + `backdrop-filter`; domain class `shell-topbar` / `shell-topbar--scrolled`.
+- New colors: add `--token` in `:root`, map in Tailwind, then use utilities — do not sprinkle hex in components.
+
+## Icon hover (shake)
+
+Shared motion lives in `index.css` as `.icon-shake` under a parent `.group`.
+
+```tsx
+// ✅ GOOD — parent is group; icon (or logo <img>) gets icon-shake
+<button className="group … hover:bg-danger/10 hover:text-danger">
+  <LogOut className="icon-shake h-4 w-4" />
+</button>
+
+<a className="group …">
+  <span className="…"><Icon className="icon-shake h-3.5 w-3.5" /></span>
+  Label
+</a>
+```
+
+- Use on chrome icons/logos (sidebar nav, logout). Do not invent a second shake keyframe.
+- Hover background is separate: pick a token tint that matches intent (danger for logout, `brand/10` or `surface-2` for nav).
+
+## CSS / classes
+
+- Prefer tokens above over raw hex.
+- Custom classes: `domain-role` (`login-brand-mesh`, `shell-topbar`, `icon-shake`). Exported style strings: `*Class` by role (`pillInputClass`).
+- Labels must match data (`To process` only for draft queues; totals say `Active`/`Total`).

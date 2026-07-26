@@ -1,0 +1,18 @@
+---
+description: Pramniaga code standards — headers, docs, naming, CSS, security, reuse
+alwaysApply: true
+---
+
+# Pramniaga Code Standards
+
+Before editing, follow [`.cursor/CODE_STANDARDS.md`](../CODE_STANDARDS.md) and [`.cursor/FILE_STRUCTURE.md`](../FILE_STRUCTURE.md).
+
+- File header on every hand-written module: `Purpose`, `Exports` (if useful), `Last updated`, `Author: Pramniaga`.
+- Every public export: named docs — TS `Name - …` + `@param` / `@returns`; Python `name - …` + Args / Returns.
+- Names must be intent-first (`defaultCompany`, `can_browse_stock`); no opaque `tmp`/`data2`.
+- CSS: prefer design tokens; custom classes are domain+role (`login-brand-mesh`); style constants end in `Class`.
+- UI labels must match metric meaning (draft vs total).
+- Never let client `payload` override `doctype`/`name` on create; require company scoping for stock queries.
+- Split at ~300 lines or a 4th unrelated concern via facade package (template: `api/inventory/`).
+- Frontend placement: `components/ui` (barrel), `layout`, `components/<domain>`, `pages/<domain>`, `lib`.
+- Preserve `pramniaga.api.<domain>.<fn>` paths. Do not drive-by reformat unrelated files.

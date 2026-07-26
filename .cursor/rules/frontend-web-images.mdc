@@ -1,0 +1,24 @@
+---
+description: When asked to find/grep images from the web, download relevant assets into frontend/src/assets
+alwaysApply: true
+---
+
+# Frontend web images
+
+When the user asks to **grep / find / search / fetch / download** an image from the internet (or to replace a placeholder with a real photo):
+
+1. **Do it** — search the web, pick the most relevant free-to-use image, download it, and save it under `frontend/src/assets/`. Do not stop at a URL or a “you can download…” suggestion.
+2. **Relevance first** — match subject, industry, mood, and UI context (e.g. warehouse stock for inventory, brand-appropriate for login). Prefer concrete product/place/atmosphere shots over abstract stock clichés.
+3. **License-safe sources** — prefer Unsplash, Pexels, Pixabay, Wikimedia Commons, or other clearly free-to-use sources. Skip paywalled or unclear-license images.
+4. **Save path & naming** — `frontend/src/assets/<intent-name>.<ext>` (e.g. `warehouse-aisle.webp`, `login-brand-hero.jpg`). Use `webp`/`jpg`/`png` as appropriate; keep files reasonably sized for the SPA.
+5. **Wire it up** when the request implies a UI use — import from `@/assets/...` (or the relative assets path used in that file) and replace the placeholder. If they only asked to fetch, still save the file and report the path.
+6. **Best effort, editable later** — choose the best match available now. The user may swap the file later; do not block on perfect art direction or ask unnecessary permission unless the brief is ambiguous (subject, page, or filename unclear).
+7. **Never** invent fake binary “images,” leave broken remote hotlinks as the only asset, or write into `pramniaga/public/frontend/` (build output).
+
+## Example
+
+User: “Grep a warehouse stock photo for the inventory overview empty state.”
+
+- Search → download a relevant free warehouse aisle / inventory photo  
+- Save → `frontend/src/assets/inventory-empty-warehouse.webp`  
+- Import in the overview empty state and use it
