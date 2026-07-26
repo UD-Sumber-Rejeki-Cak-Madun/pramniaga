@@ -4,6 +4,7 @@ import { API, useApiCall } from '@/lib/api'
 import type { Item, Warehouse } from '@/lib/types'
 import { Button, ErrorBanner, Input, LoadingState, PageHeader, Select } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
+import { useNotify } from '@/lib/notifications'
 
 type MoveKind = 'receipt' | 'delivery' | 'transfer'
 
@@ -68,6 +69,7 @@ export default function MoveFormPage({ kind }: { kind: MoveKind }) {
 		API.inventory.movesGet,
 	)
 	const { call: submitMove } = useApiCall(cfg.submitMethod)
+	const { notify } = useNotify()
 
 	useEffect(() => {
 		Promise.all([
@@ -87,6 +89,7 @@ export default function MoveFormPage({ kind }: { kind: MoveKind }) {
 		})
 	}, [listItems, listWarehouses, session?.default_company])
 
+	// Load the move record if not new
 	useEffect(() => {
 		if (isNew) return
 		setLoading(true)
@@ -141,6 +144,10 @@ export default function MoveFormPage({ kind }: { kind: MoveKind }) {
 							],
 						}
 						const doc = await createMove({ data: payload })
+						notify.success({
+							title: `${cfg.title} validated`,
+							message: 'Stock levels have been updated.',
+						})
 						navigate(`${cfg.listPath}/${doc.name}`)
 					} catch (err) {
 						setError(err instanceof Error ? err.message : 'Unable to save operation')
@@ -182,6 +189,10 @@ export default function MoveFormPage({ kind }: { kind: MoveKind }) {
 						type="button"
 						onClick={async () => {
 							await submitMove({ name: id })
+							notify.success({
+								title: `${cfg.title} submitted`,
+								message: 'Stock has been updated.',
+							})
 							navigate(cfg.listPath)
 						}}
 					>

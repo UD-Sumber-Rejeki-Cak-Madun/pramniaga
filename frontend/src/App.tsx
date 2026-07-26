@@ -1,8 +1,17 @@
+/**
+ * Purpose: SPA root — Frappe provider, auth gate, and inventory routes.
+ * Exports: default App
+ *
+ * Last updated: 2026-07-25
+ * Author: Pramniaga
+ */
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { FrappeProvider } from 'frappe-react-sdk'
 import { getRouterBasename } from '@/lib/utils'
 import { AuthProvider, useAuth } from '@/lib/auth'
-import { Shell } from '@/components/Shell'
+import { NotificationProvider } from '@/lib/notifications'
+import { NotificationStack } from '@/components/ui'
+import { Shell } from '@/components/layout/Shell'
 import { LoadingState } from '@/components/ui'
 import LoginPage from '@/pages/Login'
 import HomeDashboard from '@/pages/HomeDashboard'
@@ -16,13 +25,24 @@ import MoveFormPage from '@/pages/inventory/MoveForm'
 import AdjustmentsPage from '@/pages/inventory/Adjustments'
 import AdjustmentFormPage from '@/pages/inventory/AdjustmentForm'
 
+/**
+ * ProtectedRoute - Block until session refresh finishes, then require login.
+ *
+ * @param props.children - Authenticated route tree.
+ * @returns Loading state, redirect, or children.
+ */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
 	const { session, loading } = useAuth()
-	if (loading && !session) return <LoadingState label="Checking session…" />
+	if (loading) return <LoadingState label="Checking session…" />
 	if (!session?.logged_in) return <Navigate to="/login" replace />
 	return <>{children}</>
 }
 
+/**
+ * AppRoutes - Login + authenticated shell routes for inventory.
+ *
+ * @returns React Router route tree.
+ */
 function AppRoutes() {
 	return (
 		<Routes>
@@ -60,6 +80,11 @@ function AppRoutes() {
 	)
 }
 
+/**
+ * App - Root SPA with FrappeProvider and auth.
+ *
+ * @returns Application element.
+ */
 export default function App() {
 	const siteName =
 		window.boot?.site_name ||
@@ -69,9 +94,12 @@ export default function App() {
 	return (
 		<FrappeProvider siteName={siteName}>
 			<AuthProvider>
-				<BrowserRouter basename={getRouterBasename()}>
-					<AppRoutes />
-				</BrowserRouter>
+				<NotificationProvider>
+					<BrowserRouter basename={getRouterBasename()}>
+						<AppRoutes />
+						<NotificationStack />
+					</BrowserRouter>
+				</NotificationProvider>
 			</AuthProvider>
 		</FrappeProvider>
 	)

@@ -1,0 +1,39 @@
+---
+description: Pramniaga Python API layout, whitelist facades, docs, and safe payloads
+globs: pramniaga/**/*.py
+alwaysApply: false
+---
+
+# Pramniaga Python API
+
+Follow [`.cursor/CODE_STANDARDS.md`](../CODE_STANDARDS.md) and [`.cursor/FILE_STRUCTURE.md`](../FILE_STRUCTURE.md).
+
+## Layout
+
+- Domain modules under `pramniaga/api/`. Shared gates → `common.py`.
+- Do not move `permission.py` without updating `hooks.py`.
+- Split template: `api/inventory/` with `__init__.py` re-exporting every whitelist. Private shared helpers → `_helpers.py`.
+
+## Docs
+
+- Module docstring includes Purpose, Exports, Last updated, Author.
+- Every `@frappe.whitelist` and non-trivial helper:
+
+```
+name - Short description.
+
+Args:
+	...
+Returns:
+	...
+```
+
+- Numbered step comments only in multi-step builders. ASCII `-` in docstrings (ruff RUF002).
+
+## Safety
+
+- Whitelists are trust boundaries: `require_capability` before reads/writes that need it.
+- Never `get_doc({"doctype": X, **payload})` without stripping client `doctype`/`name`.
+- Resolve company for stock lists/counts; do not return cross-company rows when company is unset on multi-company sites.
+- Prefer facade imports (`from pramniaga.api.inventory import items_list`) in tests/www.
+- Add permission-negative tests when introducing new capabilities.

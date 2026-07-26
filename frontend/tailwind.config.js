@@ -16,6 +16,7 @@ export default {
         },
         line: 'rgb(var(--line) / <alpha-value>)',
         danger: 'rgb(var(--danger) / <alpha-value>)',
+        accent: 'rgb(var(--accent) / <alpha-value>)',
       },
       boxShadow: {
         panel: '0 10px 30px -12px rgba(15, 23, 42, 0.18)',

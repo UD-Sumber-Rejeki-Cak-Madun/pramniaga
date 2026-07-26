@@ -1,7 +1,20 @@
+/**
+ * Purpose: Frappe method registry and useApiCall unwrap helper.
+ * Exports: API, useApiCall, unwrapMessage
+ *
+ * Last updated: 2026-07-25
+ * Author: Pramniaga
+ */
+
 import { useCallback } from 'react'
 import { useFrappePostCall } from 'frappe-react-sdk'
 
-/** frappe-react-sdk's call() resolves to axios `data` = `{ message: T }`, not `T`. */
+/**
+ * unwrapMessage - Unwrap the message from the Frappe response.
+ *
+ * @param data - The Frappe response (often `{ message: T }`).
+ * @returns The unwrapped message payload.
+ */
 export function unwrapMessage<T>(data: unknown): T {
 	if (data && typeof data === 'object' && 'message' in data) {
 		return (data as { message: T }).message
@@ -9,6 +22,12 @@ export function unwrapMessage<T>(data: unknown): T {
 	return data as T
 }
 
+/**
+ * useApiCall - A custom hook to call Frappe methods.
+ *
+ * @param method - The Frappe method path to call.
+ * @returns An object containing the call function, loading state, error, result, reset, and isCompleted.
+ */
 export function useApiCall<T = unknown>(method: string) {
 	const { call: rawCall, loading, error, result, reset, isCompleted } = useFrappePostCall(method)
 	const call = useCallback(
@@ -18,6 +37,10 @@ export function useApiCall<T = unknown>(method: string) {
 	return { call, loading, error, result, reset, isCompleted }
 }
 
+/**
+ * API - Canonical whitelist method paths used by the SPA.
+ * Keep method strings here only (not scattered in pages).
+ */
 export const API = {
 	auth: {
 		login: 'pramniaga.api.auth.login',

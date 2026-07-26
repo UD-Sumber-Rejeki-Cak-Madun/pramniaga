@@ -1,3 +1,13 @@
+"""
+Purpose: Integration tests for Pramniaga auth, apps, and inventory APIs.
+Exports: TestPramniagaAuth, TestPramniagaApps, TestPramniagaInventory
+
+Last updated: 2026-07-25
+Author: Pramniaga
+"""
+
+from unittest.mock import patch
+
 import frappe
 from frappe.tests import IntegrationTestCase
 
@@ -60,6 +70,79 @@ class TestPramniagaInventory(IntegrationTestCase):
 		counts = overview_counts()
 		self.assertIn("products", counts)
 		self.assertIn("receipt", counts)
+		self.assertIn("warehouses", counts)
+
+	def test_guest_cannot_browse_or_create_items(self):
+		from pramniaga.api.inventory import items_create, items_list
+
+		frappe.set_user("Guest")
+		with self.assertRaises(frappe.AuthenticationError):
+			items_list()
+		with self.assertRaises(frappe.AuthenticationError):
+			items_create({"item_code": "SHOULD-FAIL"})
+
+	def test_underprivileged_cannot_manage_items(self):
+		from pramniaga.api.inventory import items_create, items_list
+
+		denied = {
+			"can_browse_stock": False,
+			"can_manage_items": False,
+			"can_manage_warehouses": False,
+			"can_submit_moves": False,
+			"can_adjust_stock": False,
+		}
+		with patch("pramniaga.api.common.get_capabilities", return_value=denied):
+			with self.assertRaises(frappe.PermissionError):
+				items_list()
+			with self.assertRaises(frappe.PermissionError):
+				items_create({"item_code": "SHOULD-FAIL"})
+
+	def test_items_create_ignores_forged_doctype(self):
+		from pramniaga.api.inventory import items_create
+
+		item_code = f"PRA-SAFE-{frappe.generate_hash(length=6)}"
+		item_group = frappe.db.get_value("Item Group", {"is_group": 0}, "name")
+		if not item_group:
+			self.skipTest("No leaf Item Group available")
+
+		doc = items_create(
+			{
+				"doctype": "Warehouse",
+				"name": "HACKED-NAME",
+				"item_code": item_code,
+				"item_name": item_code,
+				"item_group": item_group,
+				"stock_uom": "Nos",
+				"is_stock_item": 1,
+			}
+		)
+		self.assertEqual(doc.get("doctype"), "Item")
+		self.assertEqual(doc.get("item_code"), item_code)
+		self.assertTrue(frappe.db.exists("Item", item_code))
+		self.assertFalse(frappe.db.exists("Warehouse", "HACKED-NAME"))
+
+	def test_stock_and_overview_require_company(self):
+		from pramniaga.api.inventory import overview_counts, stock_on_hand
+
+		with patch("pramniaga.api.inventory._helpers.get_default_company", return_value=None):
+			with self.assertRaises(frappe.ValidationError):
+				stock_on_hand(company=None)
+			with self.assertRaises(frappe.ValidationError):
+				overview_counts(company=None)
+
+	def test_overview_warehouses_are_company_scoped(self):
+		from pramniaga.api.inventory import overview_counts
+
+		company = frappe.db.get_value("Company", {}, "name")
+		if not company:
+			self.skipTest("No Company available")
+
+		counts = overview_counts(company=company)
+		expected = frappe.db.count(
+			"Warehouse",
+			{"disabled": 0, "is_group": 0, "company": company},
+		)
+		self.assertEqual(counts["warehouses"], expected)
 
 	def test_create_item_and_receipt_flow(self):
 		from pramniaga.api.inventory import items_create, receipts_create, stock_on_hand
@@ -100,5 +183,5 @@ class TestPramniagaInventory(IntegrationTestCase):
 			}
 		)
 
-		rows = stock_on_hand(item_code=item_code, warehouse=warehouse)
+		rows = stock_on_hand(company=company, item_code=item_code, warehouse=warehouse)
 		self.assertTrue(any(row["actual_qty"] >= 5 for row in rows))

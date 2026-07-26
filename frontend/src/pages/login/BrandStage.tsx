@@ -1,6 +1,13 @@
+/**
+ * Purpose: Login brand splash / morphing stage panel.
+ * Exports: BrandStage
+ *
+ * Last updated: 2026-07-25
+ * Author: Pramniaga
+ */
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Logo } from '@/components/Logo'
+import { Logo } from '@/components/layout/Logo'
 import { cn } from '@/lib/utils'
 
 type BrandStageProps = {
@@ -12,6 +19,15 @@ type BrandStageProps = {
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+/**
+ * BrandStage - Animated brand panel for the login experience.
+ *
+ * @param props.phase - splash (full) or settled (side/top bar).
+ * @param props.isDesktop - Desktop layout uses right image panel.
+ * @param props.reduceMotion - Skip morph animation when true.
+ * @param props.onMorphComplete - Optional callback after morph finishes.
+ * @returns Brand stage element.
+ */
 export function BrandStage({ phase, isDesktop, reduceMotion, onMorphComplete }: BrandStageProps) {
 	const splash = phase === 'splash'
 	const duration = reduceMotion ? 0 : 0.85

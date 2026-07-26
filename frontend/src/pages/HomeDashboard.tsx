@@ -1,3 +1,10 @@
+/**
+ * Purpose: Home dashboard — revenue, activities, and upcoming events.
+ * Exports: default HomeDashboard
+ *
+ * Last updated: 2026-07-25
+ * Author: Pramniaga
+ */
 import { useEffect, useState } from 'react'
 import { Users } from 'lucide-react'
 import { API, useApiCall } from '@/lib/api'
@@ -9,6 +16,11 @@ import { UpcomingEventsCard } from '@/components/dashboard/UpcomingEventsCard'
 import { Card, ErrorBanner, PageHeader } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
+/**
+ * HomeDashboard - Loads dashboard slices independently so one failure does not blank the page.
+ *
+ * @returns Dashboard page element.
+ */
 export default function HomeDashboard() {
 	const { session } = useAuth()
 	const company = session?.default_company || undefined
@@ -25,22 +37,39 @@ export default function HomeDashboard() {
 	useEffect(() => {
 		let cancelled = false
 		setError(null)
+		setRevenue(null)
+		setActivities(null)
+		setEvents(null)
 
-		Promise.all([
-			revenueApi.call({ company }),
-			activitiesApi.call({ company, limit: 12 }),
-			eventsApi.call({ days: 14 }),
-		])
-			.then(([rev, act, ev]) => {
-				if (cancelled) return
-				setRevenue(rev)
-				setActivities(act)
-				setEvents(ev)
+		const failures: string[] = []
+
+		const noteFailure = (label: string, err: unknown) => {
+			const message = err instanceof Error ? err.message : `Unable to load ${label}`
+			failures.push(`${label}: ${message}`)
+		}
+
+		Promise.allSettled([
+			revenueApi.call({ company }).then((rev) => {
+				if (!cancelled) setRevenue(rev)
+			}),
+			activitiesApi.call({ company, limit: 12 }).then((act) => {
+				if (!cancelled) setActivities(act)
+			}),
+			eventsApi.call({ days: 14 }).then((ev) => {
+				if (!cancelled) setEvents(ev)
+			}),
+		]).then((results) => {
+			if (cancelled) return
+			const labels = ['Revenue', 'Activities', 'Events'] as const
+			results.forEach((result, index) => {
+				if (result.status === 'rejected') {
+					noteFailure(labels[index], result.reason)
+				}
 			})
-			.catch((err) => {
-				if (cancelled) return
-				setError(err.message || 'Unable to load dashboard')
-			})
+			if (failures.length) {
+				setError(failures.join(' · '))
+			}
+		})
 
 		return () => {
 			cancelled = true
