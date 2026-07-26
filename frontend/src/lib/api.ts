@@ -2,7 +2,7 @@
  * Purpose: Frappe method registry and useApiCall unwrap helper.
  * Exports: API, useApiCall, unwrapMessage
  *
- * Last updated: 2026-07-24
+ * Last updated: 2026-07-25
  * Author: Pramniaga
  */
 
@@ -45,6 +45,7 @@ export function useApiCall<T = unknown>(method: string) {
  *  - apps
  *  - dashboard
  *  - inventory
+ *  - hr
  */
 export const API = {
 	auth: {
@@ -62,6 +63,11 @@ export const API = {
 		revenueSummary: 'pramniaga.api.dashboard.revenue_summary',
 		dailyActivities: 'pramniaga.api.dashboard.daily_activities',
 		upcomingEvents: 'pramniaga.api.dashboard.upcoming_events',
+	},
+	hr: {
+		employeeMe: 'pramniaga.api.hr.employee_me',
+		employeesList: 'pramniaga.api.hr.employees_list',
+		overviewCounts: 'pramniaga.api.hr.overview_counts',
 	},
 	inventory: {
 		itemsList: 'pramniaga.api.inventory.items_list',

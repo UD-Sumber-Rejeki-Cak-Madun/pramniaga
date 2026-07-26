@@ -2,7 +2,7 @@
 
 Map of hand-written source. Follow [CODE_STANDARDS.md](CODE_STANDARDS.md) when adding files.
 
-Last updated: 2026-07-24  
+Last updated: 2026-07-25  
 Author: Pramniaga
 
 ## App root (`frappe-bench/apps/pramniaga/`)
@@ -26,54 +26,63 @@ scripts/                   # Worktree helpers
 
 ```
 api/
-  common.py                # Capabilities, login gates, parse_json
+  common.py                # Capabilities, login gates, parse_json, linked employee
   permission.py            # Apps-screen hook (path pinned in hooks.py)
   auth.py                  # login, logout, session, Google OAuth URL
-  apps.py                  # list_apps (Shell tiles)
+  apps.py                  # list_apps (capability-filtered Shell tiles)
   dashboard.py             # revenue_summary, daily_activities, upcoming_events
-  inventory/               # Facade package — method IDs stay pramniaga.api.inventory.*
-    __init__.py            # Re-exports all whitelists
-    _helpers.py            # Shared constants / company helper
+  inventory/               # Facade — method IDs stay pramniaga.api.inventory.*
+    __init__.py
+    _helpers.py
     items.py
     warehouses.py
     stock.py
     moves.py
     adjustments.py
     overview.py
+  hr/                      # Facade — method IDs stay pramniaga.api.hr.*
+    __init__.py
+    _helpers.py
+    employees.py
+    overview.py
 ```
 
-When splitting another domain, copy the `inventory/` facade pattern.
+When splitting another domain, copy the `inventory/` / `hr/` facade pattern.
 
 ## Frontend (`frontend/src/`)
 
 ```
 src/
-  main.tsx                 # Entry
-  App.tsx                  # Router + auth gate
+  main.tsx
+  App.tsx
   index.css
   lib/
-    api.ts                 # Method registry + useApiCall (JSDoc gold standard)
+    api.ts
     auth.tsx
     session.ts
     types.ts
     utils.ts
+    inventoryNav.ts
+    hrNav.ts
   components/
-    ui/                    # Primitives + barrel index.ts → import @/components/ui
+    ui/                    # Primitives + barrel (includes PermissionDenied)
     layout/                # Shell, Logo
-    dashboard/             # Home dashboard cards
+    dashboard/
+    hr/                    # HrModuleStub
   pages/
     Login.tsx
     HomeDashboard.tsx
-    login/                 # AuthForms, BrandStage, formStyles
-    inventory/             # Overview, products, stock, moves, adjustments, …
+    login/
+    inventory/
+    hr/                    # Overview, Profile, People, My*/Manage* stubs
 ```
 
 ## Cursor guidance (`.cursor/`)
 
 ```
 .cursor/
-  CODE_STANDARDS.md        # Documentation + layout rules
-  FILE_STRUCTURE.md        # This file
+  CODE_STANDARDS.md
+  FILE_STRUCTURE.md
   rules/
     code-standards.mdc
     python-api.mdc
@@ -91,6 +100,7 @@ src/
 | Concern | Stable path |
 | --- | --- |
 | Inventory whitelists | `pramniaga.api.inventory.<fn>` via package `__init__.py` |
+| HR whitelists | `pramniaga.api.hr.<fn>` via package `__init__.py` |
 | UI primitives | `@/components/ui` via `components/ui/index.ts` |
 | App chrome | `@/components/layout/Shell`, `Logo` |
 | Method strings in SPA | Only in `lib/api.ts` |

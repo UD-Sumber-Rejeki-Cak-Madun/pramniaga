@@ -2,10 +2,10 @@
  * Purpose: Authenticated app chrome — header, sidebar, mobile drawer, outlet.
  * Exports: Shell
  * Contents:
- *  - SidebarNav (home + apps + inventory sublinks)
+ *  - SidebarNav (home + expandable apps with domain sublinks)
  *  - Shell (session header, desktop aside, mobile menu, main outlet)
  *
- * Last updated: 2026-07-24
+ * Last updated: 2026-07-25
  * Author: Pramniaga
  */
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
@@ -15,50 +15,84 @@ import {
 	LogOut,
 	Menu,
 	Package,
+	Users,
 	X,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Logo } from '@/components/layout/Logo'
 import { Button } from '@/components/ui'
 import { API, useApiCall } from '@/lib/api'
-import type { AppTile } from '@/lib/types'
+import type { AppTile, Capabilities } from '@/lib/types'
 import { useAuth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
+import { inventoryLinks } from '@/lib/inventoryNav'
+import { getHrNavSections } from '@/lib/hrNav'
 
-const inventoryLinks = [
-	{ to: '/inventory', label: 'Overview', end: true },
-	{ to: '/inventory/products', label: 'Products' },
-	{ to: '/inventory/receipts', label: 'Receipts' },
-	{ to: '/inventory/deliveries', label: 'Deliveries' },
-	{ to: '/inventory/transfers', label: 'Transfers' },
-	{ to: '/inventory/adjustments', label: 'Adjustments' },
-	{ to: '/inventory/stock', label: 'On Hand' },
-	{ to: '/inventory/warehouses', label: 'Warehouses' },
-]
+interface AppNavLink {
+	to: string
+	label: string
+	end?: boolean
+}
+
+interface AppNavSection {
+	id: string
+	label: string
+	links: AppNavLink[]
+}
 
 /**
- * SidebarNav - Desktop/mobile sidebar with home, apps, and inventory links.
+ * getAppSections - Resolve expandable sub-nav for a known SPA app.
+ *
+ * @param appName - App tile name (inventory | hr).
+ * @param capabilities - Session capabilities for HR filtering.
+ * @returns Nav sections or empty when the app has no expandable links.
+ */
+function getAppSections(appName: string, capabilities: Capabilities | undefined): AppNavSection[] {
+	if (appName === 'inventory') {
+		return [{ id: 'inventory', label: '', links: inventoryLinks }]
+	}
+	if (appName === 'hr') {
+		return getHrNavSections(capabilities)
+	}
+	return []
+}
+
+/**
+ * appIcon - Icon for a known SPA app tile.
+ *
+ * @param appName - App tile name.
+ * @returns Lucide icon element.
+ */
+function appIcon(appName: string): ReactNode {
+	if (appName === 'hr') return <Users className="h-3.5 w-3.5" />
+	return <Package className="h-3.5 w-3.5" />
+}
+
+/**
+ * SidebarNav - Desktop/mobile sidebar with home, apps, and expandable domain links.
  *
  * @param props.apps - App tiles from list_apps.
- * @param props.inventoryOpen - Whether inventory sublinks are expanded.
- * @param props.onToggleInventory - Toggle/navigate inventory section.
+ * @param props.openApps - Map of app name → expanded.
+ * @param props.onToggleApp - Toggle/navigate an expandable app section.
+ * @param props.capabilities - Session capabilities for HR nav filtering.
  * @param props.onNavigate - Optional callback after a nav click (closes mobile menu).
  * @returns Sidebar navigation element.
  */
 function SidebarNav({
 	apps,
-	inventoryOpen,
-	onToggleInventory,
+	openApps,
+	onToggleApp,
+	capabilities,
 	onNavigate,
 }: {
 	apps: AppTile[]
-	inventoryOpen: boolean
-	onToggleInventory: () => void
+	openApps: Record<string, boolean>
+	onToggleApp: (app: AppTile) => void
+	capabilities: Capabilities | undefined
 	onNavigate?: () => void
 }) {
 	const location = useLocation()
-	const inInventory = location.pathname.startsWith('/inventory')
 
 	return (
 		<nav className="space-y-6">
@@ -84,87 +118,99 @@ function SidebarNav({
 				<p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Apps</p>
 				<div className="space-y-1">
 					{apps.map((app) => {
-						const isInventory = app.name === 'inventory' || app.route.startsWith('/inventory')
-						const showInventoryLinks = inInventory || inventoryOpen
-						if (isInventory) {
+						const sections = getAppSections(app.name, capabilities)
+						const inApp = location.pathname.startsWith(app.route)
+						const expanded = inApp || Boolean(openApps[app.name])
+						const hasSections = sections.some((section) => section.links.length > 0)
+
+						if (!hasSections) {
 							return (
-								<div key={app.name}>
-									<button
-										type="button"
-										onClick={onToggleInventory}
-										className={cn(
-											'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition',
-											inInventory
+								<NavLink
+									key={app.name}
+									to={app.route}
+									onClick={onNavigate}
+									className={({ isActive }) =>
+										cn(
+											'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition',
+											isActive
 												? 'bg-brand/10 font-medium text-brand'
 												: 'text-ink-muted hover:bg-surface-2',
-										)}
+										)
+									}
+								>
+									<span
+										className="flex h-6 w-6 items-center justify-center rounded-md text-white"
+										style={{ backgroundColor: app.color }}
 									>
-										<span
-											className="flex h-6 w-6 items-center justify-center rounded-md text-white"
-											style={{ backgroundColor: app.color }}
-										>
-											<Package className="h-3.5 w-3.5" />
-										</span>
-										<span className="flex-1 text-left">{app.title}</span>
-										<ChevronDown
-											className={cn('h-4 w-4 transition', showInventoryLinks ? 'rotate-180' : '')}
-										/>
-									</button>
-									<AnimatePresence initial={false}>
-										{showInventoryLinks ? (
-											<motion.div
-												initial={{ height: 0, opacity: 0 }}
-												animate={{ height: 'auto', opacity: 1 }}
-												exit={{ height: 0, opacity: 0 }}
-												className="overflow-hidden"
-											>
-												<div className="ml-3 mt-1 space-y-0.5 border-l border-line pl-3">
-													{inventoryLinks.map((link) => (
-														<NavLink
-															key={link.to}
-															to={link.to}
-															end={link.end}
-															onClick={onNavigate}
-															className={({ isActive }) =>
-																cn(
-																	'block rounded-md px-2 py-1.5 text-sm transition',
-																	isActive
-																		? 'bg-brand/10 font-medium text-brand'
-																		: 'text-ink-muted hover:bg-surface-2',
-																)
-															}
-														>
-															{link.label}
-														</NavLink>
-													))}
-												</div>
-											</motion.div>
-										) : null}
-									</AnimatePresence>
-								</div>
+										{appIcon(app.name)}
+									</span>
+									{app.title}
+								</NavLink>
 							)
 						}
 
 						return (
-							<NavLink
-								key={app.name}
-								to={app.route}
-								onClick={onNavigate}
-								className={({ isActive }) =>
-									cn(
-										'flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition',
-										isActive ? 'bg-brand/10 font-medium text-brand' : 'text-ink-muted hover:bg-surface-2',
-									)
-								}
-							>
-								<span
-									className="flex h-6 w-6 items-center justify-center rounded-md text-white"
-									style={{ backgroundColor: app.color }}
+							<div key={app.name}>
+								<button
+									type="button"
+									onClick={() => onToggleApp(app)}
+									className={cn(
+										'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition',
+										inApp ? 'bg-brand/10 font-medium text-brand' : 'text-ink-muted hover:bg-surface-2',
+									)}
 								>
-									<img src={app.logo} alt="" className="h-3.5 w-3.5" />
-								</span>
-								{app.title}
-							</NavLink>
+									<span
+										className="flex h-6 w-6 items-center justify-center rounded-md text-white"
+										style={{ backgroundColor: app.color }}
+									>
+										{appIcon(app.name)}
+									</span>
+									<span className="flex-1 text-left">{app.title}</span>
+									<ChevronDown className={cn('h-4 w-4 transition', expanded ? 'rotate-180' : '')} />
+								</button>
+								<AnimatePresence initial={false}>
+									{expanded ? (
+										<motion.div
+											initial={{ height: 0, opacity: 0 }}
+											animate={{ height: 'auto', opacity: 1 }}
+											exit={{ height: 0, opacity: 0 }}
+											className="overflow-hidden"
+										>
+											<div className="ml-3 mt-1 space-y-2 border-l border-line pl-3">
+												{sections.map((section) => (
+													<div key={section.id}>
+														{section.label ? (
+															<p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-ink-muted">
+																{section.label}
+															</p>
+														) : null}
+														<div className="space-y-0.5">
+															{section.links.map((link) => (
+																<NavLink
+																	key={link.to}
+																	to={link.to}
+																	end={link.end}
+																	onClick={onNavigate}
+																	className={({ isActive }) =>
+																		cn(
+																			'block rounded-md px-2 py-1.5 text-sm transition',
+																			isActive
+																				? 'bg-brand/10 font-medium text-brand'
+																				: 'text-ink-muted hover:bg-surface-2',
+																		)
+																	}
+																>
+																	{link.label}
+																</NavLink>
+															))}
+														</div>
+													</div>
+												))}
+											</div>
+										</motion.div>
+									) : null}
+								</AnimatePresence>
+							</div>
 						)
 					})}
 				</div>
@@ -184,9 +230,14 @@ export function Shell() {
 	const location = useLocation()
 	const [menuOpen, setMenuOpen] = useState(false)
 	const [apps, setApps] = useState<AppTile[]>([])
-	const [inventoryOpen, setInventoryOpen] = useState(false)
+	const [openApps, setOpenApps] = useState<Record<string, boolean>>({})
 	const { call } = useApiCall<AppTile[]>(API.apps.list)
-	const inInventory = location.pathname.startsWith('/inventory')
+
+	const activeAppTitle = useMemo(() => {
+		if (location.pathname.startsWith('/inventory')) return 'Inventory'
+		if (location.pathname.startsWith('/hr')) return 'HR'
+		return 'Dashboard'
+	}, [location.pathname])
 
 	useEffect(() => {
 		call({})
@@ -195,25 +246,35 @@ export function Shell() {
 	}, [call])
 
 	useEffect(() => {
-		if (!inInventory) setInventoryOpen(false)
-	}, [inInventory])
+		setOpenApps((prev) => {
+			const next = { ...prev }
+			for (const app of apps) {
+				if (!location.pathname.startsWith(app.route)) {
+					next[app.name] = false
+				}
+			}
+			return next
+		})
+	}, [location.pathname, apps])
 
 	/**
-	 * toggleInventory - Expand inventory nav and/or jump to overview.
+	 * toggleApp - Expand an app nav and/or jump to its overview.
 	 *
+	 * @param app - App tile being toggled.
 	 * @returns void
 	 */
-	const toggleInventory = () => {
-		if (inInventory) {
-			navigate('/inventory')
+	const toggleApp = (app: AppTile) => {
+		const inApp = location.pathname.startsWith(app.route)
+		if (inApp) {
+			navigate(app.route)
 			return
 		}
-		if (!inventoryOpen) {
-			setInventoryOpen(true)
-			navigate('/inventory')
+		if (!openApps[app.name]) {
+			setOpenApps((prev) => ({ ...prev, [app.name]: true }))
+			navigate(app.route)
 			return
 		}
-		setInventoryOpen(false)
+		setOpenApps((prev) => ({ ...prev, [app.name]: false }))
 	}
 
 	const closeMenu = () => setMenuOpen(false)
@@ -230,9 +291,7 @@ export function Shell() {
 							<Logo size={32} />
 							<div className="text-left">
 								<div className="font-display text-sm font-semibold">Pramniaga</div>
-								<div className="text-xs text-ink-muted">
-									{location.pathname.startsWith('/inventory') ? 'Inventory' : 'Dashboard'}
-								</div>
+								<div className="text-xs text-ink-muted">{activeAppTitle}</div>
 							</div>
 						</button>
 					</div>
@@ -257,7 +316,12 @@ export function Shell() {
 
 			<div className="mx-auto flex max-w-7xl gap-6 px-4 py-6">
 				<aside className="hidden w-60 shrink-0 md:block">
-					<SidebarNav apps={apps} inventoryOpen={inventoryOpen} onToggleInventory={toggleInventory} />
+					<SidebarNav
+						apps={apps}
+						openApps={openApps}
+						onToggleApp={toggleApp}
+						capabilities={session?.capabilities}
+					/>
 				</aside>
 
 				<AnimatePresence>
@@ -284,11 +348,12 @@ export function Shell() {
 								</div>
 								<SidebarNav
 									apps={apps}
-									inventoryOpen={inventoryOpen}
-									onToggleInventory={() => {
-										toggleInventory()
-										if (!inInventory) closeMenu()
+									openApps={openApps}
+									onToggleApp={(app) => {
+										toggleApp(app)
+										if (!location.pathname.startsWith(app.route)) closeMenu()
 									}}
+									capabilities={session?.capabilities}
 									onNavigate={closeMenu}
 								/>
 							</motion.nav>

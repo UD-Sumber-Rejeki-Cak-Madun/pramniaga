@@ -1,8 +1,8 @@
 /**
- * Purpose: Router, FrappeProvider, auth gate, and inventory/dashboard routes.
+ * Purpose: Router, FrappeProvider, auth gate, inventory/HR/dashboard routes.
  * Exports: default App
  *
- * Last updated: 2026-07-24
+ * Last updated: 2026-07-25
  * Author: Pramniaga
  */
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
@@ -22,6 +22,15 @@ import MovesListPage from '@/pages/inventory/MovesList'
 import MoveFormPage from '@/pages/inventory/MoveForm'
 import AdjustmentsPage from '@/pages/inventory/Adjustments'
 import AdjustmentFormPage from '@/pages/inventory/AdjustmentForm'
+import HrOverview from '@/pages/hr/Overview'
+import HrProfilePage from '@/pages/hr/Profile'
+import HrMyLeavePage from '@/pages/hr/MyLeave'
+import HrMyAttendancePage from '@/pages/hr/MyAttendance'
+import HrMyPayslipsPage from '@/pages/hr/MyPayslips'
+import HrPeoplePage from '@/pages/hr/People'
+import HrManageLeavePage from '@/pages/hr/ManageLeave'
+import HrManageAttendancePage from '@/pages/hr/ManageAttendance'
+import HrManagePayrollPage from '@/pages/hr/ManagePayroll'
 
 /**
  * ProtectedRoute - Redirect guests to /login; show loading while session boots.
@@ -37,7 +46,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * AppRoutes - Top-level route table for login, dashboard, and inventory.
+ * AppRoutes - Top-level route table for login, dashboard, inventory, and HR.
  *
  * @returns Routes element.
  */
@@ -71,6 +80,17 @@ function AppRoutes() {
 					<Route path="transfers/:id" element={<MoveFormPage kind="transfer" />} />
 					<Route path="adjustments" element={<AdjustmentsPage />} />
 					<Route path="adjustments/new" element={<AdjustmentFormPage />} />
+				</Route>
+				<Route path="hr" element={<Outlet />}>
+					<Route index element={<HrOverview />} />
+					<Route path="me/profile" element={<HrProfilePage />} />
+					<Route path="me/leave" element={<HrMyLeavePage />} />
+					<Route path="me/attendance" element={<HrMyAttendancePage />} />
+					<Route path="me/payslips" element={<HrMyPayslipsPage />} />
+					<Route path="manage/people" element={<HrPeoplePage />} />
+					<Route path="manage/leave" element={<HrManageLeavePage />} />
+					<Route path="manage/attendance" element={<HrManageAttendancePage />} />
+					<Route path="manage/payroll" element={<HrManagePayrollPage />} />
 				</Route>
 			</Route>
 			<Route path="*" element={<Navigate to="/" replace />} />

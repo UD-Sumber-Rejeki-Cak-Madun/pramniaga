@@ -1,7 +1,7 @@
 /**
- * Purpose: Shared TypeScript types for session, inventory, and dashboard payloads.
+ * Purpose: Shared TypeScript types for session, inventory, HR, and dashboard payloads.
  *
- * Last updated: 2026-07-24
+ * Last updated: 2026-07-25
  * Author: Pramniaga
  */
 export interface Capabilities {
@@ -10,6 +10,14 @@ export interface Capabilities {
 	can_manage_warehouses: boolean
 	can_submit_moves: boolean
 	can_adjust_stock: boolean
+	can_use_hr: boolean
+	can_self_service: boolean
+	can_view_employees: boolean
+	can_manage_employees: boolean
+	can_approve_leave: boolean
+	can_manage_attendance: boolean
+	can_view_payroll: boolean
+	can_run_payroll: boolean
 }
 
 export interface SessionUser {
@@ -18,14 +26,36 @@ export interface SessionUser {
 	email?: string
 }
 
+export interface EmployeeSummary {
+	name: string
+	employee_name: string
+	company: string
+	department?: string
+	designation?: string
+	status: string
+	image?: string
+	user_id?: string
+	date_of_joining?: string
+	reports_to?: string
+}
+
 export interface SessionData {
 	logged_in: boolean
 	user: SessionUser | null
 	roles: string[]
 	capabilities: Capabilities
+	employee: EmployeeSummary | null
 	companies: { name: string; company_name: string; abbr: string }[]
 	default_company: string | null
 	csrf_token: string
+}
+
+export interface HrOverviewCounts {
+	hrms_available: boolean
+	people?: number
+	my_leave_open?: number
+	leave_approvals_open?: number
+	my_payslips?: number
 }
 
 export interface AppTile {

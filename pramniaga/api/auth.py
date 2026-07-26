@@ -3,13 +3,18 @@ Purpose: Session, login/logout, and Google OAuth URL for the SPA.
 Exports: login, logout, session, get_google_login_url.
 Non-goals: Capability mapping (common.py); Desk OAuth callback handling.
 
-Last updated: 2026-07-24
+Last updated: 2026-07-25
 Author: Pramniaga
 """
 
 import frappe
 
-from pramniaga.api.common import get_capabilities, get_companies, get_default_company
+from pramniaga.api.common import (
+	get_capabilities,
+	get_companies,
+	get_default_company,
+	get_linked_employee,
+)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -45,11 +50,11 @@ def logout():
 @frappe.whitelist(allow_guest=True)
 def session():
 	"""
-	session - Return SPA session bootstrap (user, roles, capabilities, companies, CSRF).
+	session - Return SPA session bootstrap (user, roles, capabilities, employee, companies, CSRF).
 
 	Returns:
-		Dict with logged_in, user, roles, capabilities, companies, default_company, csrf_token.
-		Guest sessions still include csrf_token for subsequent login posts.
+		Dict with logged_in, user, roles, capabilities, employee, companies, default_company,
+		csrf_token. Guest sessions still include csrf_token for subsequent login posts.
 	"""
 	user = frappe.session.user
 	if user == "Guest":
@@ -58,6 +63,7 @@ def session():
 			"user": None,
 			"roles": [],
 			"capabilities": get_capabilities(),
+			"employee": None,
 			"companies": [],
 			"default_company": None,
 			"csrf_token": frappe.sessions.get_csrf_token(),
@@ -72,6 +78,7 @@ def session():
 		},
 		"roles": frappe.get_roles(user),
 		"capabilities": get_capabilities(),
+		"employee": get_linked_employee(user),
 		"companies": get_companies(),
 		"default_company": get_default_company(),
 		"csrf_token": frappe.sessions.get_csrf_token(),

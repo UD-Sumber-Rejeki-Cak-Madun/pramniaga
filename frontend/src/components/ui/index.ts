@@ -1,8 +1,9 @@
 /**
  * Purpose: Barrel re-exports for stable `@/components/ui` imports.
- * Exports: Button, Input, Select, Textarea, Card, PageHeader, EmptyState, LoadingState, ErrorBanner, Badge, DataTable
+ * Exports: Button, Input, Select, Textarea, Card, PageHeader, EmptyState, LoadingState,
+ *  ErrorBanner, Badge, DataTable, PermissionDenied
  *
- * Last updated: 2026-07-24
+ * Last updated: 2026-07-25
  * Author: Pramniaga
  */
 export { Button } from './Button'
@@ -16,3 +17,4 @@ export { LoadingState } from './LoadingState'
 export { ErrorBanner } from './ErrorBanner'
 export { Badge } from './Badge'
 export { DataTable } from './DataTable'
+export { PermissionDenied } from './PermissionDenied'
