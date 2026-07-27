@@ -2,7 +2,7 @@
 
 Map of hand-written source. Follow [CODE_STANDARDS.md](CODE_STANDARDS.md) when adding files.
 
-Last updated: 2026-07-25  
+Last updated: 2026-07-26  
 Author: Pramniaga
 
 ## App root
@@ -61,6 +61,7 @@ src/
     ui/                    # Primitives + barrel index.ts → import @/components/ui
     layout/                # Shell, Logo
     dashboard/             # Home dashboard cards
+    inventory/             # Product*, InventoryActionCard, receipt compose helpers
   pages/
     Login.tsx
     HomeDashboard.tsx

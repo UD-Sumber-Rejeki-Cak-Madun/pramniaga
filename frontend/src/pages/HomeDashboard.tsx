@@ -83,14 +83,7 @@ export default function HomeDashboard() {
 
 	return (
 		<div>
-			<PageHeader
-				title="Dashboard"
-				subtitle={
-					session?.default_company
-						? `Overview for ${session.default_company}`
-						: 'Overview of revenue, activity, and calendar'
-				}
-			/>
+			<PageHeader title="Dashboard" />
 
 			{error ? (
 				<div className="mb-4">

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
 import type { Item, Warehouse } from '@/lib/types'
-import { Button, ErrorBanner, Input, LoadingState, PageHeader, Select } from '@/components/ui'
+import { Button, ErrorBanner, Input, PageHeader, Select } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
 export default function AdjustmentFormPage() {
@@ -21,16 +21,17 @@ export default function AdjustmentFormPage() {
 
 	useEffect(() => {
 		Promise.all([
-			listItems({}),
+			listItems({ exclude_templates: 1, limit: 500 }),
 			listWarehouses({ company: session?.default_company, leaf_only: 1 }),
 		]).then(([itemRows, whRows]) => {
-			setItems(itemRows.filter((item) => !item.has_variants))
+			const usableItems = itemRows.filter((item) => !item.has_variants)
+			setItems(usableItems)
 			setWarehouses(whRows)
 			setForm((prev) => ({
 				...prev,
-				item_code: itemRows[0]?.item_code || '',
-				warehouse: whRows[0]?.name || '',
-				valuation_rate: itemRows[0]?.valuation_rate || 0,
+				item_code: prev.item_code || usableItems[0]?.item_code || '',
+				warehouse: prev.warehouse || whRows[0]?.name || '',
+				valuation_rate: prev.valuation_rate || usableItems[0]?.valuation_rate || 0,
 			}))
 		})
 	}, [listItems, listWarehouses, session?.default_company])
@@ -39,7 +40,6 @@ export default function AdjustmentFormPage() {
 		<div>
 			<PageHeader
 				title="New adjustment"
-				subtitle="Set the absolute on-hand quantity for a product in a warehouse."
 				actions={<Button variant="secondary" onClick={() => navigate('/inventory/adjustments')}>Back</Button>}
 			/>
 			{error ? <ErrorBanner message={error} /> : null}

@@ -5,7 +5,7 @@ Contents:
   - _moves_list / _create_stock_entry helpers
   - Purpose-specific list/create whitelists
   - Shared get/submit/cancel
-Last updated: 2026-07-25
+Last updated: 2026-07-26
 Author: Pramniaga
 """
 
@@ -27,7 +27,7 @@ def _moves_list(purpose: str, company: str | None = None, limit: int = 50):
 		limit: Max rows.
 
 	Returns:
-		List of Stock Entry summary dicts.
+		List of Stock Entry summary dicts with line_count, total_qty, lines_summary.
 	"""
 	require_capability("can_browse_stock")
 	filters = {
@@ -35,7 +35,7 @@ def _moves_list(purpose: str, company: str | None = None, limit: int = 50):
 		"docstatus": ["!=", 2],
 		"company": _company_or_throw(company),
 	}
-	return frappe.get_all(
+	rows = frappe.get_all(
 		"Stock Entry",
 		filters=filters,
 		fields=[
@@ -49,9 +49,45 @@ def _moves_list(purpose: str, company: str | None = None, limit: int = 50):
 			"to_warehouse",
 			"creation",
 		],
-		limit_page_length=cint(limit),
+		limit=cint(limit),
 		order_by="creation desc",
 	)
+	_attach_lines_summary(rows)
+	return rows
+
+
+def _attach_lines_summary(rows: list) -> None:
+	"""
+	_attach_lines_summary - Add line_count, total_qty, and lines_summary onto list rows.
+
+	Args:
+		rows: Stock Entry summary dicts (mutated in place).
+	"""
+	if not rows:
+		return
+
+	names = [row.name for row in rows]
+	lines = frappe.get_all(
+		"Stock Entry Detail",
+		filters={"parent": ["in", names]},
+		fields=["parent", "item_code", "qty"],
+		order_by="idx asc",
+	)
+	lines_by_parent: dict[str, list] = {}
+	for line in lines:
+		lines_by_parent.setdefault(line.parent, []).append(line)
+
+	for row in rows:
+		entry_lines = lines_by_parent.get(row.name, [])
+		row["line_count"] = len(entry_lines)
+		row["total_qty"] = sum(flt(line.qty) for line in entry_lines)
+		if len(entry_lines) == 1:
+			qty = flt(entry_lines[0].qty)
+			row["lines_summary"] = f"{entry_lines[0].item_code} × {qty:g}"
+		elif len(entry_lines) > 1:
+			row["lines_summary"] = _("{0} products").format(len(entry_lines))
+		else:
+			row["lines_summary"] = "—"
 
 
 def _create_stock_entry(purpose: str, data):

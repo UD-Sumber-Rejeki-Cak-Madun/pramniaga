@@ -1,0 +1,22 @@
+---
+description: Do not start yarn/vite/bench dev servers — leave that to the developer
+alwaysApply: true
+---
+
+# Dev servers — developer-owned
+
+Do **not** start, restart, or background the SPA/dev stack yourself.
+
+- Do not run `yarn dev`, `npm run dev`, `vite`, or equivalent frontend watchers.
+- Do not run `bench start` (or restart web/socketio) unless the user explicitly asks.
+- If the app is not reachable or HMR is down, tell the developer to start/restart their terminal — do not fix it by launching servers.
+
+```bash
+# ❌ BAD — agent starts the frontend
+cd frontend && yarn dev
+
+# ✅ GOOD — ask / remind the developer
+# "Start (or restart) yarn dev in your terminal, then reload the page."
+```
+
+Exception: only if the user explicitly says to start/restart a named server in that message.

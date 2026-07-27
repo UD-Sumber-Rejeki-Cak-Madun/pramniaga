@@ -36,6 +36,8 @@ export interface Item {
 	item_code: string
 	item_name: string
 	item_group: string
+	category?: string | null
+	category_path?: string | null
 	stock_uom: string
 	is_stock_item: number
 	disabled: number
@@ -45,7 +47,94 @@ export interface Item {
 	standard_rate?: number
 	description?: string
 	image?: string
-	attributes?: { attribute: string; attribute_value: string }[]
+	/** Display barcode; same value as item_code by product policy. */
+	barcode?: string
+	barcodes?: { barcode: string; barcode_type?: string }[]
+	uoms?: ItemUomRow[]
+	attributes?: { attribute: string; attribute_value?: string }[]
+}
+
+export interface ItemUomRow {
+	uom: string
+	conversion_factor: number
+}
+
+export interface ItemGroupNode {
+	name: string
+	item_group_name: string
+	is_group: number
+	parent_item_group?: string | null
+	children: ItemGroupNode[]
+}
+
+/** Draft payload passed to the customer preview route via location.state. */
+export interface ProductPreviewDraft {
+	item_code?: string
+	item_name: string
+	standard_rate?: number
+	/** Customer-facing copy only; do not pass internal Item.description notes. */
+	description?: string
+	image?: string | null
+	has_variants?: number
+	item_group?: string
+	category_path?: string | null
+}
+
+export interface ItemAttributeValue {
+	attribute_value: string
+	abbr?: string
+}
+
+export interface ItemAttribute {
+	name: string
+	attribute_name: string
+	numeric_values: number
+	values?: ItemAttributeValue[]
+}
+
+export interface ProductMedia {
+	item_code: string
+	image?: string | null
+	video_url?: string | null
+	video_file_name?: string | null
+}
+
+export interface ProductMediaUploadResult {
+	item_code: string
+	media_kind: 'image' | 'video'
+	file_url: string
+	image?: string | null
+	video_url?: string | null
+}
+
+export interface ProductUomMediaRow {
+	uom: string
+	conversion_factor: number
+	is_stock_uom: number
+	image_url?: string | null
+}
+
+export interface ProductUomMedia {
+	item_code: string
+	stock_uom: string
+	media: ProductUomMediaRow[]
+}
+
+export interface ProductUomMediaUploadResult {
+	item_code: string
+	uom: string
+	image_url: string
+	file_url: string
+}
+
+export interface ItemCodeSuggestion {
+	item_code: string
+	barcode: string
+}
+
+export interface VariantCreateManyResult {
+	created: Item[]
+	errors: { attributes: Record<string, string>; error: string }[]
 }
 
 export interface Warehouse {
@@ -75,6 +164,9 @@ export interface StockEntrySummary {
 	docstatus: number
 	from_warehouse?: string
 	to_warehouse?: string
+	line_count?: number
+	total_qty?: number
+	lines_summary?: string
 }
 
 export interface OverviewCounts {

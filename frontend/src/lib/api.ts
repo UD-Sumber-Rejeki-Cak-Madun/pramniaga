@@ -2,7 +2,7 @@
  * Purpose: Frappe method registry and useApiCall unwrap helper.
  * Exports: API, useApiCall, unwrapMessage
  *
- * Last updated: 2026-07-25
+ * Last updated: 2026-07-26
  * Author: Pramniaga
  */
 
@@ -61,13 +61,22 @@ export const API = {
 	inventory: {
 		itemsList: 'pramniaga.api.inventory.items_list',
 		itemsGet: 'pramniaga.api.inventory.items_get',
+		itemsSuggestCode: 'pramniaga.api.inventory.items_suggest_code',
 		itemsCreate: 'pramniaga.api.inventory.items_create',
 		itemsUpdate: 'pramniaga.api.inventory.items_update',
+		itemsGetMedia: 'pramniaga.api.inventory.items_get_media',
+		itemsUploadMedia: 'pramniaga.api.inventory.items_upload_media',
+		itemsGetUomMedia: 'pramniaga.api.inventory.items_get_uom_media',
+		itemsUploadUomMedia: 'pramniaga.api.inventory.items_upload_uom_media',
+		itemsSetAttributes: 'pramniaga.api.inventory.items_set_attributes',
 		itemGroupsList: 'pramniaga.api.inventory.item_groups_list',
+		itemGroupsTree: 'pramniaga.api.inventory.item_groups_tree',
 		uomsList: 'pramniaga.api.inventory.uoms_list',
 		attributesList: 'pramniaga.api.inventory.attributes_list',
 		attributesCreate: 'pramniaga.api.inventory.attributes_create',
+		variantsList: 'pramniaga.api.inventory.variants_list',
 		variantsCreate: 'pramniaga.api.inventory.variants_create',
+		variantsCreateMany: 'pramniaga.api.inventory.variants_create_many',
 		warehousesList: 'pramniaga.api.inventory.warehouses_list',
 		warehousesCreate: 'pramniaga.api.inventory.warehouses_create',
 		stockOnHand: 'pramniaga.api.inventory.stock_on_hand',

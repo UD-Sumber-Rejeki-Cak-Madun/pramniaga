@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { API, useApiCall } from '@/lib/api'
 import type { BinRow } from '@/lib/types'
-import { DataTable, EmptyState, ErrorBanner, LoadingState, PageHeader } from '@/components/ui'
+import { DataTable, EmptyState, ErrorBanner, PageHeader } from '@/components/ui'
 import { formatQty } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 
@@ -19,9 +19,11 @@ export default function StockPage() {
 
 	return (
 		<div>
-			<PageHeader title="On Hand" subtitle="Current stock quantities by warehouse." />
+			<PageHeader
+				title="On Hand"
+				loading={loading}
+			/>
 			{error ? <ErrorBanner message={error} /> : null}
-			{loading ? <LoadingState /> : null}
 			{!loading && rows.length === 0 ? (
 				<EmptyState title="No stock on hand" description="Create products and post a receipt to see quantities here." />
 			) : null}

@@ -16,6 +16,10 @@
 	--accent: 168 144 254;
 }
 
+html {
+	scrollbar-gutter: stable;
+}
+
 body {
 	@apply bg-canvas text-ink antialiased;
 	font-family: 'DM Sans', system-ui, sans-serif;
@@ -60,6 +64,12 @@ body {
 
 .group:hover .icon-shake {
 	animation: icon-shake 0.55s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.group:hover .icon-shake {
+		animation: none;
+	}
 }
 
 .shell-topbar {

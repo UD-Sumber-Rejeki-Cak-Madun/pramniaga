@@ -60,10 +60,15 @@ className="hover:bg-danger/10 hover:text-danger" // logout / destructive
 
 ## Icon hover (shake)
 
-Shared motion lives in `index.css` as `.icon-shake` under a parent `.group`.
+Shared motion lives in `index.css` as `.icon-shake` under a parent `.group`. **Any labeled icon button should shake its icon on hover** (Back, Preview, Edit, nav, logout, etc.) — not only sidebar chrome.
 
 ```tsx
-// ✅ GOOD — parent is group; icon (or logo <img>) gets icon-shake
+// ✅ GOOD — parent is group; icon gets icon-shake
+<Button type="button" variant="secondary" className="group" onClick={…}>
+  <Eye className="icon-shake h-4 w-4" />
+  Preview
+</Button>
+
 <button className="group … hover:bg-danger/10 hover:text-danger">
   <LogOut className="icon-shake h-4 w-4" />
 </button>
@@ -74,7 +79,9 @@ Shared motion lives in `index.css` as `.icon-shake` under a parent `.group`.
 </a>
 ```
 
-- Use on chrome icons/logos (sidebar nav, logout). Do not invent a second shake keyframe.
+- Parent control must include `group`; the icon (or logo `<img>`) gets `icon-shake`.
+- Do not invent a second shake keyframe; respect `prefers-reduced-motion` (already gated in CSS).
+- Pair distinct icons with distinct actions (e.g. `Eye` = Preview, `Pencil` = Edit, `ArrowLeft` = Back) — do not reuse the same glyph for both Preview and Edit.
 - Hover background is separate: pick a token tint that matches intent (danger for logout, `brand/10` or `surface-2` for nav).
 
 ## CSS / classes

@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react'
 import { API, useApiCall } from '@/lib/api'
 import type { Warehouse } from '@/lib/types'
-import { Button, DataTable, EmptyState, ErrorBanner, Input, LoadingState, PageHeader } from '@/components/ui'
+import { Button, DataTable, EmptyState, ErrorBanner, Input, PageHeader } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 import { useNotify } from '@/lib/notifications'
 
@@ -49,7 +49,7 @@ export default function WarehousesPage() {
 		<div>
 			<PageHeader
 				title="Warehouses"
-				subtitle="Storage locations used for receipts, deliveries, and transfers."
+				loading={loading}
 				actions={
 					session?.capabilities.can_manage_warehouses ? (
 						<Button
@@ -103,7 +103,6 @@ export default function WarehousesPage() {
 					</div>
 				</form>
 			) : null}
-			{loading ? <LoadingState /> : null}
 			{!loading && rows.length === 0 ? <EmptyState title="No warehouses" description="Create a warehouse to receive stock." /> : null}
 			{rows.length > 0 ? (
 				<DataTable

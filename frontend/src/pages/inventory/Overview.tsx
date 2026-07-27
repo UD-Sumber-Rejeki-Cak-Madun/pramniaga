@@ -11,7 +11,7 @@ import { API, useApiCall } from '@/lib/api'
 import type { OverviewCounts } from '@/lib/types'
 import { inventoryOverviewCards } from '@/lib/inventoryNav'
 import { InventoryActionCard } from '@/components/inventory/InventoryActionCard'
-import { ErrorBanner, LoadingState, PageHeader } from '@/components/ui'
+import { ErrorBanner, PageHeader } from '@/components/ui'
 import { useAuth } from '@/lib/auth'
 
 /**
@@ -36,10 +36,9 @@ export default function InventoryOverview() {
 		<div>
 			<PageHeader
 				title="Inventory Overview"
-				subtitle="Track operations, stock, and master data from one place."
+				loading={loading}
 			/>
 			{error ? <ErrorBanner message={error} /> : null}
-			{loading ? <LoadingState /> : null}
 			<div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
 				{inventoryOverviewCards.map((card, index) => (
 					<motion.div

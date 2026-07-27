@@ -17,7 +17,7 @@ import {
 	X,
 } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
+import { motion, AnimatePresence, LayoutGroup, useReducedMotion } from 'framer-motion'
 import { Logo } from '@/components/layout/Logo'
 import { NavSearch } from '@/components/layout/NavSearch'
 import { Button } from '@/components/ui'
@@ -284,6 +284,7 @@ export function Shell() {
 	const { session, logout } = useAuth()
 	const navigate = useNavigate()
 	const location = useLocation()
+	const reduceMotion = useReducedMotion()
 	const [menuOpen, setMenuOpen] = useState(false)
 	const [apps, setApps] = useState<AppTile[]>([])
 	const [inventoryOpen, setInventoryOpen] = useState(false)
@@ -430,9 +431,21 @@ export function Shell() {
 				</AnimatePresence>
 
 				<main className="min-w-0 flex-1">
-					<motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
-						<Outlet />
-					</motion.div>
+					<AnimatePresence mode="wait" initial={false}>
+						<motion.div
+							key={location.pathname}
+							initial={reduceMotion ? false : { opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={reduceMotion ? undefined : { opacity: 0 }}
+							transition={
+								reduceMotion
+									? { duration: 0 }
+									: { duration: 0.14, ease: 'linear' }
+							}
+						>
+							<Outlet />
+						</motion.div>
+					</AnimatePresence>
 				</main>
 			</div>
 		</div>

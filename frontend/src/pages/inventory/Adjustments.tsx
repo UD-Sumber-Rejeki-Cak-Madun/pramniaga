@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API, useApiCall } from '@/lib/api'
-import { Badge, Button, DataTable, EmptyState, ErrorBanner, LoadingState, PageHeader } from '@/components/ui'
+import { Badge, Button, DataTable, EmptyState, ErrorBanner, PageHeader } from '@/components/ui'
 import { docstatusLabel } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 
@@ -30,7 +30,7 @@ export default function AdjustmentsPage() {
 		<div>
 			<PageHeader
 				title="Adjustments"
-				subtitle="Set counted quantities to match physical inventory."
+				loading={loading}
 				actions={
 					session?.capabilities.can_adjust_stock ? (
 						<Button onClick={() => navigate('/inventory/adjustments/new')}>New adjustment</Button>
@@ -38,7 +38,6 @@ export default function AdjustmentsPage() {
 				}
 			/>
 			{error ? <ErrorBanner message={error} /> : null}
-			{loading ? <LoadingState /> : null}
 			{!loading && rows.length === 0 ? (
 				<EmptyState title="No adjustments" description="Create a physical inventory adjustment when counts differ from system stock." />
 			) : null}

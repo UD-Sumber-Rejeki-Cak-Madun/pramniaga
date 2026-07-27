@@ -18,6 +18,8 @@ import HomeDashboard from '@/pages/HomeDashboard'
 import InventoryOverview from '@/pages/inventory/Overview'
 import ProductsPage from '@/pages/inventory/Products'
 import ProductFormPage from '@/pages/inventory/ProductForm'
+import ProductMediaVariantsPage from '@/pages/inventory/ProductMediaVariants'
+import ProductCustomerPreviewPage from '@/pages/inventory/ProductCustomerPreview'
 import StockPage from '@/pages/inventory/Stock'
 import WarehousesPage from '@/pages/inventory/Warehouses'
 import MovesListPage from '@/pages/inventory/MovesList'
@@ -59,6 +61,9 @@ function AppRoutes() {
 					<Route index element={<InventoryOverview />} />
 					<Route path="products" element={<ProductsPage />} />
 					<Route path="products/new" element={<ProductFormPage />} />
+					<Route path="products/new/preview" element={<ProductCustomerPreviewPage />} />
+					<Route path="products/:id/media" element={<ProductMediaVariantsPage />} />
+					<Route path="products/:id/preview" element={<ProductCustomerPreviewPage />} />
 					<Route path="products/:id" element={<ProductFormPage />} />
 					<Route path="stock" element={<StockPage />} />
 					<Route path="warehouses" element={<WarehousesPage />} />

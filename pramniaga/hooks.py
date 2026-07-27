@@ -54,8 +54,8 @@ add_to_apps_screen = [
 
 # Home Pages
 # ----------
-
-home_page = "frontend"
+# Do not set home_page to "frontend" — leave :8000 as Frappe/ERPNext (login → /desk).
+# Pramniaga SPA is served on Vite :8080 in dev, and at /frontend on :8000 when built.
 
 # website user home page (by Role)
 # role_home_page = {

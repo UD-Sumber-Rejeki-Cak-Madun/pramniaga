@@ -4,7 +4,7 @@ Exports: Every public function under pramniaga.api.inventory.* (see Contents).
 Non-goals: Business logic (lives in sibling modules).
 
 Contents:
-  - items: items_*, item_groups_list, uoms_list, attributes_*, variants_create
+  - items: items_*, item_groups_list, item_groups_tree, uoms_list, attributes_*, variants_*
   - warehouses: warehouses_list, warehouses_create
   - stock: stock_on_hand, stock_balance
   - moves: receipts_*, deliveries_*, transfers_*, moves_*
@@ -12,7 +12,7 @@ Contents:
   - overview: overview_counts
 
 Method IDs such as pramniaga.api.inventory.items_list remain valid via these re-exports.
-Last updated: 2026-07-25
+Last updated: 2026-07-26
 Author: Pramniaga
 """
 
@@ -26,12 +26,21 @@ from pramniaga.api.inventory.items import (
 	attributes_create,
 	attributes_list,
 	item_groups_list,
+	item_groups_tree,
 	items_create,
 	items_get,
+	items_get_media,
+	items_get_uom_media,
 	items_list,
+	items_set_attributes,
+	items_suggest_code,
 	items_update,
+	items_upload_media,
+	items_upload_uom_media,
 	uoms_list,
 	variants_create,
+	variants_create_many,
+	variants_list,
 )
 from pramniaga.api.inventory.moves import (
 	deliveries_create,
@@ -58,10 +67,17 @@ __all__ = [
 	"deliveries_create",
 	"deliveries_list",
 	"item_groups_list",
+	"item_groups_tree",
 	"items_create",
 	"items_get",
+	"items_get_media",
+	"items_get_uom_media",
 	"items_list",
+	"items_set_attributes",
+	"items_suggest_code",
 	"items_update",
+	"items_upload_media",
+	"items_upload_uom_media",
 	"moves_cancel",
 	"moves_get",
 	"moves_submit",
@@ -74,6 +90,8 @@ __all__ = [
 	"transfers_list",
 	"uoms_list",
 	"variants_create",
+	"variants_create_many",
+	"variants_list",
 	"warehouses_create",
 	"warehouses_list",
 ]
